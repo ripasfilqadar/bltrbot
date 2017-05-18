@@ -53,6 +53,7 @@ func StartTelegram() {
 				fmt.Println("")
 				CurrentUser.UserName = update.Message.From.UserName
 				CurrentUser.FullName = update.Message.From.FirstName + " " + update.Message.From.LastName
+				CurrentUser.State = 1
 				db.MysqlDB().Create(&CurrentUser)
 			}
 		}

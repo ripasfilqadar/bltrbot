@@ -2,9 +2,14 @@ package model
 
 import (
 	"90/db"
+	//	"time"
 
 	"github.com/jinzhu/gorm"
 )
+
+//const (
+//	startDate = time.Time.Clock(9 0 0)
+//)
 
 type User struct {
 	gorm.Model
@@ -12,6 +17,7 @@ type User struct {
 	FullName       string `json:"full_name" bson:"full_name"`
 	Target         int    `json:"target" bson:"target"`
 	RemainingToday int
+	State          int
 }
 
 //func SetUser(username string, target int, full_name string) *User {
@@ -34,6 +40,24 @@ func (u *User) GetRemainingToday() int {
 		remaining_today = u.RemainingToday
 	}
 	return remaining_today
+}
+
+func (u *User) StateEmoji() (emoji string) {
+	if u.State == 0 {
+		emoji = "✈"
+	} else if u.TodayReport() < u.Target {
+		emoji = "👹"
+	}
+	return emoji
+}
+
+func (u *User) TodayReport() (total int) {
+	reports := []Report{}
+	db.MysqlDB().Model(u).Related(&reports).Where("type = report")
+	for _, report := range reports {
+		total += report.Value
+	}
+	return total
 }
 
 //func (u *User) AddUserToDB() (err error) {

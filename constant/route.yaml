@@ -6,3 +6,5 @@ command:
    function: TodayReport
  /list-today:
    function: ListToday
+ /list-iqob: 
+   function: ListIqob

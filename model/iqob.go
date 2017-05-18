@@ -9,13 +9,14 @@ import (
 
 type Iqob struct {
 	gorm.Model
+	User     User
 	UserId   int
-	Status   int
+	Status   string
 	IqobDate time.Time
 	PaidAt   time.Time
 }
 
 func (iqob *Iqob) paid() {
-	iqob.Status = 1
+	iqob.Status = "paid"
 	db.MysqlDB().Save(iqob)
 }

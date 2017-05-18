@@ -22,11 +22,11 @@ func (c *Controller) TodayReport() {
 	fmt.Println("today report")
 	value, err := strconv.Atoi(Args[2])
 	if err == nil && value > 0 && &Args[1] != nil {
-		var report_type int
+		var report_type string
 		if Args[1] == ("iqob") {
-			report_type = 1
+			report_type = "iqob"
 		} else if Args[1] == "report" {
-			report_type = 0
+			report_type = "report"
 			db.MysqlDB().Model(&CurrentUser).Update("remaining_today", (CurrentUser.RemainingToday - value))
 		} else {
 			Bot.ReplyToUser("tipe Laporan tidak ditemukan")

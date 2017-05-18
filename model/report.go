@@ -7,6 +7,6 @@ import (
 type Report struct {
 	gorm.Model
 	UserId uint
-	Type   int
+	Type   string
 	Value  int
 }
