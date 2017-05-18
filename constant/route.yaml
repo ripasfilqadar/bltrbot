@@ -8,3 +8,7 @@ command:
    function: ListToday
  /list-iqob: 
    function: ListIqob
+ /rekap-iqob:
+   function: RekapIqob
+ /paid-iqob:
+  function: PaidIqob

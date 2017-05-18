@@ -17,7 +17,8 @@ type User struct {
 	FullName       string `json:"full_name" bson:"full_name"`
 	Target         int    `json:"target" bson:"target"`
 	RemainingToday int
-	State          int
+	State          string
+	ChatId         int64
 }
 
 //func SetUser(username string, target int, full_name string) *User {
@@ -43,7 +44,7 @@ func (u *User) GetRemainingToday() int {
 }
 
 func (u *User) StateEmoji() (emoji string) {
-	if u.State == 0 {
+	if u.State == "cuti" {
 		emoji = "✈"
 	} else if u.TodayReport() < u.Target {
 		emoji = "👹"

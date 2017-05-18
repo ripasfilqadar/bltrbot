@@ -42,8 +42,8 @@ func StartTelegram() {
 		currentUser(update.Message)
 		Msg = model.Message{Message: update.Message.Text, MessageId: update.Message.MessageID, Date: update.Message.Date, ChatID: update.Message.Chat.ID}
 		Args = strings.Split(Msg.Message, " ")
-		fmt.Println(Msg)
-		fmt.Println(update)
+		fmt.Println(Msg.Message)
+
 		if CurrentUser == (model.User{}) {
 			fmt.Println("start update")
 			if Msg.Command() != "/target" {
@@ -51,9 +51,7 @@ func StartTelegram() {
 				continue
 			} else {
 				fmt.Println("")
-				CurrentUser.UserName = update.Message.From.UserName
-				CurrentUser.FullName = update.Message.From.FirstName + " " + update.Message.From.LastName
-				CurrentUser.State = 1
+				CurrentUser = model.User{UserName: update.Message.From.UserName, FullName: update.Message.From.FirstName + " " + update.Message.From.LastName, State: "active", ChatId: Msg.ChatID}
 				db.MysqlDB().Create(&CurrentUser)
 			}
 		}
@@ -69,6 +67,11 @@ func (t *Telegram) ReplyToUser(msg string) {
 	fmt.Println(Msg)
 	MsgBot = tgbotapi.NewMessage(Msg.ChatID, msg)
 	MsgBot.ReplyToMessageID = Msg.MessageId
+	Bot.Bot.Send(MsgBot)
+}
+
+func (t *Telegram) SendToUser(msg string, chat_id int64) {
+	MsgBot = tgbotapi.NewMessage(chat_id, msg)
 	Bot.Bot.Send(MsgBot)
 }
 

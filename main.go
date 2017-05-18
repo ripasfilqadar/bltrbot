@@ -5,18 +5,20 @@ import (
 	"90/model"
 )
 
+var Emoji = map[string]string{
+	"not_confirm": "👹",
+	"smile":       "😇",
+	"iqob":        "💀",
+	"leave":       "✈️",
+}
+
 func main() {
 	InitRoute()
 	InitDB()
 	InitTelegram()
 	StartTelegram()
-	// botGroup := entity.ConnectTelegram(config.TOKEN)
-	// botGroup.GetUpateGroup()
-	// day := time.Now().Weekday().String()
-	// entity.FindAllUser()
-	// fmt.Println(config.DayOfWeek(day))
 }
 
 func InitDB() {
-	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{})
+	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{}, &model.Iqob{})
 }

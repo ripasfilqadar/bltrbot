@@ -5,6 +5,7 @@ import (
 	"90/model"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 func (c *Controller) SetTarget() {
@@ -38,5 +39,24 @@ func (c *Controller) TodayReport() {
 		Bot.ReplyToUser("Laporan berhasil dimasukkan")
 	} else {
 		Bot.ReplyToUser("Nilai yang anda masukkan salah")
+	}
+}
+
+func (c *Controller) PaidIqob() {
+	total, err := strconv.Atoi(Args[1])
+	if err == nil && total > 0 {
+		iqobs := []model.Iqob{}
+		db.MysqlDB().Where("state = ?", "not_paid").Find(&iqobs).Limit(total)
+		count := 0
+		for _, iqob := range iqobs {
+			iqob.PaidAt = time.Now()
+			iqob.State = "paid"
+			db.MysqlDB().Save(&iqob)
+			count++
+		}
+		Bot.ReplyToUser(strconv.Itoa(count) + " Iqob telah dibayar")
+	} else {
+		panic(err)
+		Bot.ReplyToUser("Total Iqob harus lebih besar dari 0")
 	}
 }
