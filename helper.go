@@ -1,7 +1,7 @@
 package main
 
 import (
-  "90/model"
+  "github.com/ripasfilqadar/bltr_bot/model"
 )
 
 func StateEmoji(u model.User) (emoji string) {

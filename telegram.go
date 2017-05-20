@@ -1,15 +1,17 @@
 package main
 
 import (
-	"90/db"
 	"fmt"
+	"github.com/ripasfilqadar/bltr_bot/db"
 	"reflect"
 
-	"90/constant"
-	"90/model"
+	"github.com/ripasfilqadar/bltr_bot/constant"
+	"github.com/ripasfilqadar/bltr_bot/model"
 	"strings"
 
 	"strconv"
+
+	//	"net/http"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -38,7 +40,14 @@ func InitTelegram() {
 func StartTelegram() {
 	u := tgbotapi.NewUpdate(1)
 	u.Timeout = 60
+
 	updates, _ := Bot.Bot.GetUpdatesChan(u)
+	//	_, err := Bot.Bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://www.google.com:8443/"+Bot.Bot.Token, "cert.pem"))
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	updates := Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
+	//	go http.ListenAndServeTLS("0.0.0.0:8443", "cert.pem", "key.pem", nil)
 	for update := range updates {
 		var group_id int64
 		if update.EditedMessage != nil {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"90/db"
-	"90/model"
 	"fmt"
+	"github.com/ripasfilqadar/bltr_bot/db"
+	"github.com/ripasfilqadar/bltr_bot/model"
 	"strconv"
 	"strings"
 	"time"
