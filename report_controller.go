@@ -56,16 +56,12 @@ func (c *Controller) RekapIqob() {
 	Bot.SendToUser(template, Msg.ChatID)
 }
 
-//func (c *Controller) ListIqobToday(){
-//	day := time.Now().AddDate(0, 0, -1)
-//}
-
 func ListMemberToday() (list string) {
 	members := []model.User{}
 	template := ""
-	db.MysqlDB().Find(&members)
+	db.MysqlDB().Where("group_id = ?", Msg.GroupId).Find(&members)
 	for index, member := range members {
-		template += strconv.Itoa(index+1) + "). " + member.StateEmoji() + " " + member.FullName + " (" + strconv.Itoa(member.Target) + ")\n"
+		template += strconv.Itoa(index+1) + "). " + StateEmoji(member) + " " + member.FullName + " (" + strconv.Itoa(member.RemainingToday) + ")\n"
 	}
 	return template
 }

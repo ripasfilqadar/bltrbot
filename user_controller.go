@@ -21,22 +21,18 @@ func (c *Controller) SetTarget() {
 
 func (c *Controller) TodayReport() {
 	fmt.Println("today report")
-	value, err := strconv.Atoi(Args[2])
-	if err == nil && value > 0 && &Args[1] != nil {
-		var report_type string
-		if Args[1] == ("iqob") {
-			report_type = "iqob"
-		} else if Args[1] == "report" {
-			report_type = "report"
-			db.MysqlDB().Model(&CurrentUser).Update("remaining_today", (CurrentUser.RemainingToday - value))
-		} else {
-			Bot.ReplyToUser("tipe Laporan tidak ditemukan")
-			return
+	value, err := strconv.Atoi(Args[1])
+	if err == nil && value > 0 {
+		report_type := "tilawah"
+		remaining_today := CurrentUser.RemainingToday - value
+		if remaining_today < 0 {
+			remaining_today = 0
 		}
+		db.MysqlDB().Model(&CurrentUser).Update("remaining_today", remaining_today)
 
 		report := model.Report{UserId: CurrentUser.ID, Value: value, Type: report_type}
 		db.MysqlDB().Create(&report)
-		Bot.ReplyToUser("Laporan berhasil dimasukkan")
+		Bot.ReplyToUser("Laporan berhasil dimasukkan, sisa tilawah anda adalah " + strconv.Itoa(CurrentUser.RemainingToday) + " halaman")
 	} else {
 		Bot.ReplyToUser("Nilai yang anda masukkan salah")
 	}

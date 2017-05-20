@@ -9,7 +9,7 @@ var Emoji = map[string]string{
 	"not_confirm": "👹",
 	"smile":       "😇",
 	"iqob":        "💀",
-	"leave":       "✈️",
+	"leave":       "✈",
 }
 
 func main() {
@@ -20,5 +20,5 @@ func main() {
 }
 
 func InitDB() {
-	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{}, &model.Iqob{})
+	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{}, &model.Iqob{}, &model.Group{})
 }

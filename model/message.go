@@ -10,10 +10,12 @@ type Message struct {
 	MessageId int    `json:"message_id" bson: "message_id"`
 	Date      int    `json:"date" bson: "date"`
 	ChatID    int64  `json:"chat_id" bson: "chat_id"`
+	Type      string
+	GroupId   int64
 }
 
 func (msg *Message) Command() string {
-	return strings.Split(msg.Message, " ")[0]
+	return strings.Split(strings.Split(msg.Message, " ")[0], "@")[0]
 }
 
 //type MessageInterface interface {

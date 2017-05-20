@@ -1,14 +1,33 @@
 host: 127.0.0.1
 command:
- /target: 
-   function: SetTarget
- /lapor:
-   function: TodayReport
- /list-today:
-   function: ListToday
- /list-iqob: 
-   function: ListIqob
- /rekap-iqob:
-   function: RekapIqob
- /paid-iqob:
+ /target:
+  function: SetTarget
+  len_args: 2 
+  description: Atur target harian anda (/target 10)
+ /report:
+  function: TodayReport
+  len_args: 2
+  description: Laporkan Tilawah anda (/report 3) 
+ /list_today: 
+  function: ListToday
+  len_args: 1
+  description: Menampilkan Detail Tilawah Semua member hari ini
+ /list_member:
+  function: ListMember
+  len_args: 1
+  description: Menampilkan List member beserta target, 
+ /listiqob:
+  function: ListIqob
+  len_args: 1
+  description: Menampilkan semua list Iqob yang belum dibayar
+ /rekap_iqob:
+  function: RekapIqob
+  len_args: 1
+ /paid_iqob:
   function: PaidIqob
+  len_args: 2
+  description: Untuk Membayar Iqob (/paid-iqob total_iqob)
+ /help:
+  function: Help
+  len_args: 1
+  description: Menampilkan list perintah yang tersedia

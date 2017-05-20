@@ -13,7 +13,9 @@ type Route struct {
 }
 
 type Command struct {
-	Function string `yaml:"function"`
+	Function    string `yaml:"function"`
+	LenArgs     string `yaml:"len_args"`
+	Description string `yaml:"description"`
 }
 
 var Routes Route
@@ -24,4 +26,7 @@ func InitRoute() {
 		panic(err)
 	}
 	err = yaml.Unmarshal(source, &Routes)
+	if err != nil {
+		panic(err)
+	}
 }

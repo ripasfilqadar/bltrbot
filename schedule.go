@@ -36,7 +36,7 @@ func updateRemaining() {
 		iqob := model.Iqob{UserId: user.ID, State: "not_paid", IqobDate: iqob_date}
 		db.MysqlDB().Create(&iqob)
 		db.MysqlDB().Update("remaining_today", user.Target)
-		template += strconv.Itoa(index+1) + "). " + user.StateEmoji()
+		template += strconv.Itoa(index+1) + "). " + StateEmoji(user)
 	}
 	c := Controller{}
 	c.ListIqob()

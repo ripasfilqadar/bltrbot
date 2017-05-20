@@ -19,6 +19,7 @@ type User struct {
 	RemainingToday int
 	State          string
 	ChatId         int64
+	GroupId        int64
 }
 
 //func SetUser(username string, target int, full_name string) *User {
@@ -41,15 +42,6 @@ func (u *User) GetRemainingToday() int {
 		remaining_today = u.RemainingToday
 	}
 	return remaining_today
-}
-
-func (u *User) StateEmoji() (emoji string) {
-	if u.State == "cuti" {
-		emoji = "✈"
-	} else if u.TodayReport() < u.Target {
-		emoji = "👹"
-	}
-	return emoji
 }
 
 func (u *User) TodayReport() (total int) {
