@@ -9,9 +9,10 @@ import (
 	"github.com/ripasfilqadar/bltr_bot/model"
 	"strings"
 
+	"log"
 	"strconv"
 
-	//	"net/http"
+	"net/http"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"os"
@@ -61,6 +62,7 @@ func InitTelegram() {
 }
 
 func StartTelegram() {
+	port := os.Getenv("PORT")
 	updates := Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
 
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
