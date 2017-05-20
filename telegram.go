@@ -15,7 +15,7 @@ import (
 	"net/http"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"os"
+	// "os"
 )
 
 type Telegram struct {
@@ -30,11 +30,6 @@ var CurrentRoute Command
 var Args []string
 
 func InitTelegram() {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
 
 	fmt.Println("start")
 	bot, err := tgbotapi.NewBotAPI(constant.TOKEN)
@@ -62,10 +57,9 @@ func InitTelegram() {
 }
 
 func StartTelegram() {
-	port := os.Getenv("PORT")
 	updates := Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
 
-	go http.ListenAndServe("0.0.0.0:"+port, nil)
+	go http.ListenAndServe("0.0.0.0:5000", nil)
 	for update := range updates {
 		var group_id int64
 		if update.EditedMessage != nil {
