@@ -4,14 +4,61 @@
 	"GodepVersion": "v79",
 	"Deps": [
 		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.3-6-g9dee4ca",
+			"Rev": "9dee4ca50b83acdf57a35fb9e6fb4be640afa2f3"
+		},
+		{
 			"ImportPath": "github.com/go-telegram-bot-api/telegram-bot-api",
 			"Comment": "v4.6-25-g9f98d19",
 			"Rev": "9f98d19464ddfabe93b1939a64538e4b6fbb9ad0"
 		},
 		{
+			"ImportPath": "github.com/jasonlvhit/gocron",
+			"Rev": "42a5804d37aa0b9239b265e894a16b8edbf52d54"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm",
+			"Comment": "v1.0-154-g717654b",
+			"Rev": "717654b31c3d51348cb305684369c20a8387154b"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/inflection",
+			"Rev": "1c35d901db3da928c72a72d8458480cc9ade058f"
+		},
+		{
 			"ImportPath": "github.com/technoweenie/multipartstreamer",
 			"Comment": "v1.0.1",
 			"Rev": "a90a01d73ae432e2611d178c18367fbaa13e0154"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2",
+			"Comment": "r2016.08.01-5-g3f83fa5",
+			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/bson",
+			"Comment": "r2016.08.01-5-g3f83fa5",
+			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/internal/json",
+			"Comment": "r2016.08.01-5-g3f83fa5",
+			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/internal/sasl",
+			"Comment": "r2016.08.01-5-g3f83fa5",
+			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+		},
+		{
+			"ImportPath": "gopkg.in/mgo.v2/internal/scram",
+			"Comment": "r2016.08.01-5-g3f83fa5",
+			"Rev": "3f83fa5005286a7fe593b055f0d7771a7dce4655"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"
 		}
 	]
 }
