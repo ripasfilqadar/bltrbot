@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/ripasfilqadar/bltr_bot/db"
+	"github.com/ripasfilqadar/bltrbot/db"
 	"reflect"
 
-	"github.com/ripasfilqadar/bltr_bot/constant"
-	"github.com/ripasfilqadar/bltr_bot/model"
+	"github.com/ripasfilqadar/bltrbot/constant"
+	"github.com/ripasfilqadar/bltrbot/model"
 	"strings"
 
 	"log"
@@ -143,7 +143,7 @@ func isError(msg *tgbotapi.Message) bool {
 		return true
 	}
 	if msg.NewChatMember != nil {
-		if msg.NewChatMember.UserName == "bltr_bot" {
+		if msg.NewChatMember.UserName == "bltrbot" {
 			group := model.Group{}
 			db.MysqlDB().Where("group_id = ?", Msg.GroupId).First(&group)
 			if group == (model.Group{}) {
@@ -159,7 +159,7 @@ func isError(msg *tgbotapi.Message) bool {
 		return true
 	}
 	if msg.LeftChatMember != nil {
-		if msg.LeftChatMember.UserName == "bltr_bot" {
+		if msg.LeftChatMember.UserName == "bltrbot" {
 			group := model.Group{}
 			db.MysqlDB().Model(&group).Where("group_id = ?", Msg.GroupId).Update("state", "inactive")
 		}

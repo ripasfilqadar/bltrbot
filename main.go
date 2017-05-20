@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/ripasfilqadar/bltr_bot/db"
-	"github.com/ripasfilqadar/bltr_bot/model"
+	"github.com/ripasfilqadar/bltrbot/db"
+	"github.com/ripasfilqadar/bltrbot/model"
 )
 
 var Emoji = map[string]string{

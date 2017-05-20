@@ -8,7 +8,7 @@
     "example"
   ],
   "image": "heroku/go:1.6",
-  "mount_dir": "src/github.com/ripasfilqadar/bltr_bot",
-  "website": "http://github.com/ripasfilqadar/bltr_bot",
-  "repository": "http://github.com/ripasfilqadar/bltr_bot"
+  "mount_dir": "src/github.com/ripasfilqadar/bltrbot",
+  "website": "http://github.com/ripasfilqadar/bltrbot",
+  "repository": "http://github.com/ripasfilqadar/bltrbot"
 }

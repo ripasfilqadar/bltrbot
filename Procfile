@@ -1,1 +1,1 @@
-web: bltr_bot
+web: bltrbot
