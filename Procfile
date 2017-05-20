@@ -1,1 +1,1 @@
-worker: bltr_bot
+web: go-getting-started

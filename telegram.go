@@ -14,6 +14,7 @@ import (
 	//	"net/http"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"os"
 )
 
 type Telegram struct {
@@ -28,26 +29,41 @@ var CurrentRoute Command
 var Args []string
 
 func InitTelegram() {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
+	fmt.Println("start")
+	bot, err := tgbotapi.NewBotAPI(constant.TOKEN)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	bot.Debug = true
+
+	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	bot.RemoveWebhook()
+
+	_, err = bot.SetWebhook(tgbotapi.NewWebhook("https://bltrbot.herokuapp.com/" + bot.Token))
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("start telegram")
-	tgbot, err := tgbotapi.NewBotAPI(constant.TOKEN)
-	Bot.Bot = tgbot
+
+	Bot.Bot = bot
 	if err != nil {
 		panic(err)
 	}
-	tgbot.Debug = true
 }
 
 func StartTelegram() {
-	u := tgbotapi.NewUpdate(1)
-	u.Timeout = 60
+	updates := Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
 
-	updates, _ := Bot.Bot.GetUpdatesChan(u)
-	//	_, err := Bot.Bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://www.google.com:8443/"+Bot.Bot.Token, "cert.pem"))
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	updates := Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
-	//	go http.ListenAndServeTLS("0.0.0.0:8443", "cert.pem", "key.pem", nil)
+	go http.ListenAndServe("0.0.0.0:"+port, nil)
 	for update := range updates {
 		var group_id int64
 		if update.EditedMessage != nil {
