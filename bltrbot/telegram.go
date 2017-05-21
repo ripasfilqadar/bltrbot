@@ -9,10 +9,10 @@ import (
 	"github.com/ripasfilqadar/bltrbot/model"
 	"strings"
 
-	"log"
+//	"log"
 	"strconv"
 
-	"net/http"
+//	"net/http"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	// "os"
@@ -30,36 +30,19 @@ var CurrentRoute Command
 var Args []string
 
 func InitTelegram() {
-
-	fmt.Println("start")
-	bot, err := tgbotapi.NewBotAPI(constant.TOKEN)
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	bot.Debug = true
-
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
-	bot.RemoveWebhook()
-
-	_, err = bot.SetWebhook(tgbotapi.NewWebhook("https://bltrbot.herokuapp.com/" + bot.Token))
-	if err != nil {
-		log.Fatal(err)
-	}
 	fmt.Println("start telegram")
-
-	Bot.Bot = bot
+	tgbot, err := tgbotapi.NewBotAPI(constant.TOKEN)
+	Bot.Bot = tgbot
 	if err != nil {
 		panic(err)
 	}
+	tgbot.Debug = true
 }
 
 func StartTelegram() {
-	updates := Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
-
-	go http.ListenAndServe("0.0.0.0:5000", nil)
+	u := tgbotapi.NewUpdate(1)
+	u.Timeout = 60
+	updates, _ := Bot.Bot.GetUpdatesChan(u)
 	for update := range updates {
 		var group_id int64
 		if update.EditedMessage != nil {
