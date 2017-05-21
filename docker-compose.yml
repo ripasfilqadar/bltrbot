@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  app:
+    build:
+      context: ./bltrbot
+    volumes:
+      - ./bltrbot:/go/src/github.com/ripasfilqadar/bltrbot
+    depends_on:
+      - mysql
+    ports:
+      - "5000:5000"
+    networks:
+      - backend
+
+  mysql:
+    build:
+      context: ./mysql
+    environment:
+      - MYSQL_DATABASE=bltrbot
+      - MYSQL_USER=bltrbot
+      - MYSQL_PASSWORD=bltrbot
+      - MYSQL_ROOT_PASSWORD=bltrbot
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"
+
+volumes:
+  app:
+    driver: 'local'
+  mysql:
+    driver: "local"
+
