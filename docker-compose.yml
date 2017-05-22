@@ -28,6 +28,15 @@ services:
     networks:
       - backend
 
+  mongo:
+    build: ./mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo:/data/db
+    networks:
+      - backend
+
 networks:
   backend:
     driver: "bridge"
