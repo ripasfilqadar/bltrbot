@@ -1,2 +1,2 @@
-mysql/data/*
-mongo/data/*
+mysql/data/
+mongo/data/
