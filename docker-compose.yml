@@ -17,21 +17,21 @@ services:
     build:
       context: ./mysql
     environment:
-      - MYSQL_DATABASE=bltrbot
-      - MYSQL_USER=bltrbot
-      - MYSQL_PASSWORD=bltrbot
-      - MYSQL_ROOT_PASSWORD=bltrbot
+      - MYSQL_DATABASE=${MYSQL_DATABASE_NAME}
+      - MYSQL_USER=${MYSQL_DATABASE_USER}
+      - MYSQL_PASSWORD=${MYSQL_DATABASE_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE_PASSWORD}
     volumes:
       - ./mysql/data:/var/lib/mysql
     ports:
-      - "8010:3306"
+      - "8010:${MYSQL_DATABASE_PORT}"
     networks:
       - backend
 
   mongo:
     build: ./mongo
     ports:
-      - "8020:27017"
+      - "8020:${MONGO_DATABASE_PORT}"
     volumes:
       - ./mongo:/data/db
     networks:

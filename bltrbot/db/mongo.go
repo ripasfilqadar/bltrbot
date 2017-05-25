@@ -5,7 +5,7 @@ import (
 )
 
 func MongoDB(collection_name string) *mgo.Collection {
-	session, err := mgo.Dial("127.0.0.1")
+	session, err := mgo.Dial("mongo")
 	if err != nil {
 		panic(err)
 	}

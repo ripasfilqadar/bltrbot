@@ -2,3 +2,4 @@ mysql/data/
 mongo/data/
 mongo/
 !mongo/Dockerfile
+.env
