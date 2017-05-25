@@ -33,7 +33,13 @@ func (c *Controller) TodayReport() {
 
 		report := model.Report{UserId: CurrentUser.ID, Value: value, Type: report_type}
 		db.MysqlDB().Create(&report)
-		Bot.ReplyToUser("Laporan berhasil dimasukkan, sisa tilawah anda adalah " + strconv.Itoa(CurrentUser.RemainingToday) + " halaman")
+		var msg string
+		if CurrentUser.RemainingToday == 0{
+			msg = "Target kamu hari ini sudah tercapai"
+		}else{
+			msg ="Laporan berhasil dimasukkan, sisa tilawah anda adalah " + strconv.Itoa(CurrentUser.RemainingToday) + " halaman"
+		}
+		Bot.ReplyToUser(msg)
 	} else {
 		Bot.ReplyToUser("Nilai yang anda masukkan salah")
 	}
@@ -53,22 +59,28 @@ func (c *Controller) PaidIqob() {
 		}
 		Bot.ReplyToUser(strconv.Itoa(count) + " Iqob telah dibayar")
 	} else {
-		panic(err)
 		Bot.ReplyToUser("Total Iqob harus lebih besar dari 0")
 	}
 }
 
 func (c *Controller) DetailOfMe() {
-	template := "Detail Tilawah anda\n Target: " + strconv.Itoa(CurrentUser.Target) + "\n"
-	iqobs := []model.Iqob{}
-	db.MysqlDB().Where("user_id = ?", CurrentUser.ID).Find(&iqobs)
-	count := 1
-	for _, iqob := range iqobs {
+	template := "Detail Tilawah anda\nTarget: " + strconv.Itoa(CurrentUser.Target) + "\n"
+	allIqobs := []model.Iqob{}
+	db.MysqlDB().Where("user_id = ?", CurrentUser.ID).Find(&allIqobs)
+	count := 0
+	for _, iqob := range allIqobs {
 		if iqob.State == "not_paid" {
 			count++
 		}
 	}
 	template += "Total Iqob yang belum dibayar: " + strconv.Itoa(count) + "\n"
-	template += "Total semua Iqob : " + strconv.Itoa(len(iqobs)) + "\n"
+	template += "Total semua Iqob : " + strconv.Itoa(len(allIqobs)) + "\nList Iqob\n"
+	iqobs := []model.Iqob{}
+	year, month, _ := time.Now().Date()
+
+	db.MysqlDB().Where("user_id = ? and MONTH(iqob_date) = ? and YEAR(iqob_date) = ? and state = ?", CurrentUser.ID, int(month), year, "not_paid").Find(&iqobs)
+	for idx, iqob := range iqobs {
+		template += strconv.Itoa(idx+1) + ") " + Emoji["iqob"] + " " + DateFormat(iqob.IqobDate.Date()) + "\n"
+	}
 	Bot.ReplyToUser(template)
 }

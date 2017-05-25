@@ -26,8 +26,8 @@ func main() {
 	InitRoute()
 	InitDB()
 	InitTelegram()
-	reminderUser()
-	updateRemaining()
+	//	reminderUser()
+	//	updateRemaining()
 	StartTelegram()
 }
 
@@ -36,7 +36,7 @@ func InitDB() {
 }
 
 func initEnv() {
-	file, err := os.Open(".env")
+	file, err := os.Open("../.env")
 	if err != nil {
 		panic(err)
 	}

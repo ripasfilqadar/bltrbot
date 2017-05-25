@@ -29,7 +29,7 @@ func reminderUser() {
 		db.MysqlDB().Where("group_id = ? and remaining_today > 0", group.GroupId).Find(&users)
 		var username_users string
 		for idx, user := range users {
-			username_users += strconv.Itoa(idx+1) + ") " + Emoji["not_confirm"] + " @" + user.UserName + "(" + strconv.Itoa(user.RemainingToday) + ")\n"
+			username_users += strconv.Itoa(idx+1) + ") " + Emoji["not_confirm"] + user.FullName + "(@" + user.UserName + ") (" + strconv.Itoa(user.RemainingToday) + ")\n"
 			fmt.Println(username_users)
 			Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)
 		}
@@ -55,7 +55,7 @@ func updateRemaining() {
 				Bot.SendToUser("Karena kamu belum laporan di group "+group.Name+" , jangan lupa bayar iqob ya", user.ChatId)
 				iqob := model.Iqob{UserId: user.ID, State: "not_paid", IqobDate: iqob_date, PaidAt: iqob_date}
 				db.MysqlDB().Create(&iqob)
-				username_users += strconv.Itoa(idx+1) + " ). " + Emoji["not_paid"] + " " + user.FullName + "\n"
+				username_users += strconv.Itoa(idx+1) + " ). " + Emoji["not_confirm"] + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
 			}
 			db.MysqlDB().Model(&user).Update("remaining_today", user.Target)
 		}

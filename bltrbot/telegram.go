@@ -34,7 +34,6 @@ var Args []string
 func InitTelegram() {
 	fmt.Println("start telegram")
 	tgbot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
-	fmt.Println(os.Getenv("TELEGRAM_TOKEN"))
 	Bot.Bot = tgbot
 	if err != nil {
 		panic(err)
@@ -48,6 +47,7 @@ func StartTelegram() {
 	updates, _ := Bot.Bot.GetUpdatesChan(u)
 	for update := range updates {
 		var group_id int64
+
 		if update.EditedMessage != nil {
 			continue
 		}
@@ -117,6 +117,7 @@ func onlyForGroup(msg *tgbotapi.Message) bool {
 }
 
 func findFunc() {
+	fmt.Println(CurrentRoute.Function)
 	reflect.ValueOf(&AppController).MethodByName(CurrentRoute.Function).Call([]reflect.Value{})
 }
 
@@ -129,7 +130,7 @@ func isError(msg *tgbotapi.Message) bool {
 		return true
 	}
 	if msg.NewChatMember != nil {
-		if msg.NewChatMember.UserName == "bltrbot" {
+		if msg.NewChatMember.UserName == os.Getenv("TELEGRAM_USERNAME") {
 			group := model.Group{}
 			db.MysqlDB().Where("group_id = ?", Msg.GroupId).First(&group)
 			if group == (model.Group{}) {
@@ -145,17 +146,19 @@ func isError(msg *tgbotapi.Message) bool {
 		return true
 	}
 	if msg.LeftChatMember != nil {
-		if msg.LeftChatMember.UserName == "bltrbot" {
+		if msg.LeftChatMember.UserName == os.Getenv("TELEGRAM_USERNAME") {
 			group := model.Group{}
 			db.MysqlDB().Model(&group).Where("group_id = ?", Msg.GroupId).Update("state", "inactive")
 		}
 	}
+
 	if CurrentRoute.Function == "" {
 		Bot.ReplyToUser("Perintah tidak ditemukan")
 		return true
 	}
 	len_args, _ := strconv.Atoi(CurrentRoute.LenArgs)
-	if len_args != len(Args) {
+
+	if len_args > len(Args) {
 		fmt.Println(CurrentRoute.Function)
 		fmt.Println(len(Args))
 		Bot.ReplyToUser("Perintah anda tidak sesuai")

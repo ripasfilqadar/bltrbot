@@ -12,14 +12,10 @@ command:
   function: ListToday
   len_args: 1
   description: Menampilkan Detail Tilawah Semua member hari ini
- /list_member:
-  function: ListMember
-  len_args: 1
-  description: Menampilkan List member beserta target,
- /listiqob:
+ /list_iqob:
   function: ListIqob
   len_args: 1
-  description: Menampilkan semua list Iqob yang belum dibayar
+  description: Menampilkan semua list Iqob yang belum dibayar, (/listiqob 5), 5 adalah bulan ke 5
  /paid_iqob:
   function: PaidIqob
   len_args: 2
