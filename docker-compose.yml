@@ -4,16 +4,6 @@ services:
   app:
     build:
       context: ./bltrbot
-      args:
-        - MYSQL_DATABASE_PORT=${MYSQL_DATABASE_PORT}
-        - MYSQL_DATABASE_NAME=${MYSQL_DATABASE_NAME}
-        - MYSQL_DATABASE_USER=${MYSQL_DATABASE_USER}
-        - MYSQL_DATABASE_PASSWORD=${MYSQL_DATABASE_PASSWORD}
-        - MYSQL_DATABASE_HOST=${MYSQL_DATABASE_HOST}
-        - MONGO_DATABASE_NAME=${MONGO_DATABASE_NAME}
-        - MONGO_DATABASE_PORT=${MONGO_DATABASE_PORT}
-        - MONGO_DATABASE_HOST=${MONGO_DATABASE_HOST}
-        - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
     volumes:
       - ./bltrbot:/go/src/github.com/ripasfilqadar/bltrbot/bltrbot
     depends_on:
