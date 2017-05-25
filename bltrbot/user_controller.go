@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
-	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
 	"strconv"
 	"time"
+
+	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
 )
 
 func (c *Controller) SetTarget() {
@@ -55,4 +56,19 @@ func (c *Controller) PaidIqob() {
 		panic(err)
 		Bot.ReplyToUser("Total Iqob harus lebih besar dari 0")
 	}
+}
+
+func (c *Controller) DetailOfMe() {
+	template := "Detail Tilawah anda\n Target: " + strconv.Itoa(CurrentUser.Target) + "\n"
+	iqobs := []model.Iqob{}
+	db.MysqlDB().Where("user_id = ?", CurrentUser.ID).Find(&iqobs)
+	count := 1
+	for _, iqob := range iqobs {
+		if iqob.State == "not_paid" {
+			count++
+		}
+	}
+	template += "Total Iqob yang belum dibayar: " + strconv.Itoa(count) + "\n"
+	template += "Total semua Iqob : " + strconv.Itoa(len(iqobs)) + "\n"
+	Bot.ReplyToUser(template)
 }

@@ -2,14 +2,10 @@ package model
 
 import (
 	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
-	//	"time"
 
 	"github.com/jinzhu/gorm"
 )
 
-//const (
-//	startDate = time.Time.Clock(9 0 0)
-//)
 
 type User struct {
 	gorm.Model
@@ -21,10 +17,6 @@ type User struct {
 	ChatId         int64
 	GroupId        int64
 }
-
-//func SetUser(username string, target int, full_name string) *User {
-//	return &User{username, full_name, target}
-//}
 
 func (u *User) SetTarget(target int) {
 	if &u.Target == nil {
@@ -52,53 +44,3 @@ func (u *User) TodayReport() (total int) {
 	}
 	return total
 }
-
-//func (u *User) AddUserToDB() (err error) {
-//	user := FindUser(u.UserName)
-//	if (User{}) != user {
-//		err = errors.New("Username sudah digunakan")
-//	} else {
-//		err = UserDB().Insert(u)
-//	}
-//	return err
-//}
-
-//func FindUser(username string) User {
-//	user := User{}
-//	fmt.Println(user)
-//	UserDB().Find(bson.M{"username": username}).One(&user)
-
-//	return user
-//}
-
-//func (p *User) TargetToString(page_today int) string {
-//	target_string := ""
-//	switch {
-//	case page_today == 0:
-//		target_string = "Belum Ada"
-//	case page_today < p.Target:
-//		target_string = "Belum Tercapai"
-//	case page_today >= p.Target:
-//		target_string = "Tercapai"
-//	}
-//	return target_string
-//}
-
-//func (u *User) Update() (err error) {
-//	colQuerier := bson.M{"username": u.UserName}
-//	change := bson.M{"target": u.Target}
-//	err = UserDB().Update(colQuerier, change)
-//	return err
-//}
-
-//func FindAllUser() []User {
-//	users := []User{}
-//	UserDB().Find(nil).All(&users)
-//	fmt.Println(users)
-//	return users
-//}
-
-//func UserDB() *mgo.Collection {
-//	conn := request.NewConnectionMongo("user")
-//	return conn.Collection
-//}

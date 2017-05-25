@@ -3,10 +3,14 @@ package main
 import (
 	"fmt"
 
+	"bufio"
+
+	"os"
+
+	"strings"
+
 	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
 	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
-
-	//	"github.com/jasonlvhit/gocron"
 )
 
 var Emoji = map[string]string{
@@ -16,16 +20,9 @@ var Emoji = map[string]string{
 	"leave":       "✈",
 }
 
-func lala() {
-	fmt.Println("lalalala")
-}
-
 func main() {
 	fmt.Println("start")
-	//	gocron.Every(1).Day().At("14:51").Do(lala)
-	//	// function Start start all the pending jobs
-	//	<-gocron.Start()
-
+	initEnv()
 	InitRoute()
 	InitDB()
 	InitTelegram()
@@ -36,4 +33,18 @@ func main() {
 
 func InitDB() {
 	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{}, &model.Iqob{}, &model.Group{})
+}
+
+func initEnv() {
+	file, err := os.Open(".env")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		envTemp := strings.Split(scanner.Text(), "=")
+		os.Setenv(envTemp[0], envTemp[1])
+	}
 }
