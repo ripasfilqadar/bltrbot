@@ -5,11 +5,11 @@ services:
     build:
       context: ./bltrbot
     volumes:
-      - ./bltrbot:/go/src/github.com/ripasfilqadar/bltrbot
+      - ./bltrbot:/go/src/github.com/ripasfilqadar/bltrbot/bltrbot
     depends_on:
       - mysql
     ports:
-      - "5000:5000"
+      - "8000:5000"
     networks:
       - backend
 
@@ -24,14 +24,14 @@ services:
     volumes:
       - ./mysql/data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "8010:3306"
     networks:
       - backend
 
   mongo:
     build: ./mongo
     ports:
-      - "27017:27017"
+      - "8020:27017"
     volumes:
       - ./mongo:/data/db
     networks:
