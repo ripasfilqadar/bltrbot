@@ -8,7 +8,6 @@ import (
 
 	"strings"
 
-	"github.com/ripasfilqadar/bltrbot/bltrbot/constant"
 	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
 
 	//	"log"
@@ -16,8 +15,9 @@ import (
 
 	//	"net/http"
 
+	"os"
+
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	// "os"
 )
 
 type Telegram struct {
@@ -33,7 +33,8 @@ var Args []string
 
 func InitTelegram() {
 	fmt.Println("start telegram")
-	tgbot, err := tgbotapi.NewBotAPI(constant.TOKEN)
+	tgbot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_TOKEN"))
+	fmt.Println(os.Getenv("TELEGRAM_TOKEN"))
 	Bot.Bot = tgbot
 	if err != nil {
 		panic(err)
