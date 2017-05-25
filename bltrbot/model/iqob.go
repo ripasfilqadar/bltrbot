@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/ripasfilqadar/bltrbot/db"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
 	"time"
 
 	"github.com/jinzhu/gorm"

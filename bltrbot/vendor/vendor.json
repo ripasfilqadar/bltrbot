@@ -3,20 +3,20 @@
 	"ignore": "test",
 	"package": [
 		{
-			"path": "github.com/ripasfilqadar/bltrbot/constant",
+			"path": "github.com/ripasfilqadar/bltrbot/bltrbot/constant",
 			"revision": ""
 		},
 		{
-			"path": "github.com/ripasfilqadar/bltrbot/db",
+			"path": "github.com/ripasfilqadar/bltrbot/bltrbot/db",
 			"revision": ""
 		},
 		{
-			"path": "github.com/ripasfilqadar/bltrbot/model",
+			"path": "github.com/ripasfilqadar/bltrbot/bltrbot/model",
 			"revision": ""
 		},
 		{
 			"checksumSHA1": "uMgK3fwhiu16//WoFe+xaqTy4RQ=",
-			"path": "github.com/ripasfilqadar/bltrbot",
+			"path": "github.com/ripasfilqadar/bltrbot/bltrbot",
 			"revision": "0992bc323ff8849a5d334514deabaeb734813316",
 			"revisionTime": "2017-05-20T10:21:14Z"
 		},
@@ -26,5 +26,5 @@
 			"revision": "d9558e5c97f85372afee28cf2b6059d7d3818919"
 		}
 	],
-	"rootPath": "github.com/ripasfilqadar/bltrbot"
+	"rootPath": "github.com/ripasfilqadar/bltrbot/bltrbot"
 }

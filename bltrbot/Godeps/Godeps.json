@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/ripasfilqadar/bltrbot",
+	"ImportPath": "github.com/ripasfilqadar/bltrbot/bltrbot",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v79",
 	"Deps": [

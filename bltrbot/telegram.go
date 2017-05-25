@@ -2,17 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/ripasfilqadar/bltrbot/db"
 	"reflect"
 
-	"github.com/ripasfilqadar/bltrbot/constant"
-	"github.com/ripasfilqadar/bltrbot/model"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
+
 	"strings"
 
-//	"log"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/constant"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
+
+	//	"log"
 	"strconv"
 
-//	"net/http"
+	//	"net/http"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	// "os"
@@ -85,8 +87,8 @@ func (t *Telegram) ReplyToUser(msg string) {
 	Bot.Bot.Send(MsgBot)
 }
 
-func (t *Telegram) SendToGroup(msg string) {
-	MsgBot = tgbotapi.NewMessage(Msg.GroupId, msg)
+func (t *Telegram) SendToGroup(group_id int64, msg string) {
+	MsgBot = tgbotapi.NewMessage(group_id, msg)
 	Bot.Bot.Send(MsgBot)
 }
 
@@ -135,7 +137,7 @@ func isError(msg *tgbotapi.Message) bool {
 			} else {
 				db.MysqlDB().Model(&group).Update("state", "active")
 			}
-			Bot.SendToGroup("Terimakasih sudah menambahkan BLTR Bot, pilih /help untuk melihat list perintah yang tersedia")
+			Bot.SendToGroup(group.GroupId, "Terimakasih sudah menambahkan BLTR Bot, pilih /help untuk melihat list perintah yang tersedia")
 		} else {
 			Bot.ReplyToUser("Welcome @" + msg.NewChatMember.UserName + ", silahkan pilih /target untuk mengatur tilawah anda, atau /help untuk melihat list perintah yang tersedia")
 		}

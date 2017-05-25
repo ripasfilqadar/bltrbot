@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/ripasfilqadar/bltrbot/db"
-	"github.com/ripasfilqadar/bltrbot/model"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
 	"strconv"
 	"strings"
 	"time"

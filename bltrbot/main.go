@@ -1,8 +1,12 @@
 package main
 
 import (
-	"github.com/ripasfilqadar/bltrbot/db"
-	"github.com/ripasfilqadar/bltrbot/model"
+	"fmt"
+
+	"github.com/ripasfilqadar/bltrbot/bltrbot/db"
+	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
+
+	//	"github.com/jasonlvhit/gocron"
 )
 
 var Emoji = map[string]string{
@@ -12,10 +16,21 @@ var Emoji = map[string]string{
 	"leave":       "✈",
 }
 
+func lala() {
+	fmt.Println("lalalala")
+}
+
 func main() {
+	fmt.Println("start")
+	//	gocron.Every(1).Day().At("14:51").Do(lala)
+	//	// function Start start all the pending jobs
+	//	<-gocron.Start()
+
 	InitRoute()
 	InitDB()
 	InitTelegram()
+	reminderUser()
+	updateRemaining()
 	StartTelegram()
 }
 

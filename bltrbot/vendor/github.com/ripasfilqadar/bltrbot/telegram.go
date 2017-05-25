@@ -140,7 +140,7 @@ func isError(msg *tgbotapi.Message) bool {
 			} else {
 				db.MysqlDB().Model(&group).Update("state", "active")
 			}
-			Bot.SendToGroup("Terimakasih sudah menambahkan BLTR Bot, pilih /help untuk melihat list perintah yang tersedia")
+			Bot.SendToGroup(group.GroupId, "Terimakasih sudah menambahkan BLTR Bot, pilih /help untuk melihat list perintah yang tersedia")
 		} else {
 			Bot.ReplyToUser("Welcome @" + msg.NewChatMember.UserName + ", silahkan pilih /target untuk mengatur tilawah anda, atau /help untuk melihat list perintah yang tersedia")
 		}
