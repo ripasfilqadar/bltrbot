@@ -3,3 +3,5 @@ mongo/data/
 mongo/
 !mongo/Dockerfile
 .env
+bltrbot/bltrbot
+bltrbot/bltr_bot
