@@ -26,6 +26,7 @@ func main() {
 	InitRoute()
 	InitDB()
 	InitTelegram()
+	RunSchedule()
 	//	reminderUser()
 	//	updateRemaining()
 	StartTelegram()
