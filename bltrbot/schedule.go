@@ -16,12 +16,14 @@ import (
 func RunSchedule() {
 	gocron.Every(1).Day().At("20:00").Do(reminderUser)
 	gocron.Every(1).Day().At("00:00").Do(updateRemaining)
+	<-gocron.Start()
 
 }
 
 //Task
 func reminderUser() {
 	template := "Yang belum laporan \n"
+	fmt.Println("Debug")
 	groups := []model.Group{}
 	db.MysqlDB().Find(&groups)
 	for _, group := range groups {
