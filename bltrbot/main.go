@@ -36,7 +36,7 @@ func InitDB() {
 }
 
 func initEnv() {
-	file, err := os.Open("../.env")
+	file, err := os.Open(".env")
 	if err != nil {
 		panic(err)
 	}
@@ -45,6 +45,8 @@ func initEnv() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		envTemp := strings.Split(scanner.Text(), "=")
-		os.Setenv(envTemp[0], envTemp[1])
+		if len(envTemp) == 2{
+			os.Setenv(envTemp[0], envTemp[1])
+		}
 	}
 }
