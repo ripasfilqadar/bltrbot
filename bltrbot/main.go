@@ -26,7 +26,7 @@ func main() {
 	InitRoute()
 	InitDB()
 	InitTelegram()
-	RunSchedule()
+	go RunSchedule()
 	//	reminderUser()
 	//	updateRemaining()
 	StartTelegram()
@@ -46,7 +46,7 @@ func initEnv() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		envTemp := strings.Split(scanner.Text(), "=")
-		if len(envTemp) == 2{
+		if len(envTemp) == 2 {
 			os.Setenv(envTemp[0], envTemp[1])
 		}
 	}

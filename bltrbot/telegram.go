@@ -58,7 +58,7 @@ func StartTelegram() {
 		}
 		Msg = model.Message{Message: update.Message.Text, MessageId: update.Message.MessageID, Date: update.Message.Date, ChatID: update.Message.Chat.ID, Type: update.Message.Chat.Type, GroupId: group_id}
 		CurrentRoute = Routes.Command[Msg.Command()]
-		Args = strings.Split(Msg.Message, " ")
+		Args = strings.Fields(Msg.Message)
 		if isError(update.Message) {
 			continue
 		}
@@ -100,7 +100,9 @@ func (t *Telegram) SendToUser(msg string, chat_id int64) {
 
 func currentUser(msg *tgbotapi.Message) {
 	if CurrentUser == (model.User{}) {
-		if msg.Chat.Type == "private" {
+		if CurrentRoute.Admin {
+			db.MysqlDB().Where("user_name = ?", os.Getenv("ADMIN_USERNAME")).First(&CurrentUser)
+		} else if msg.Chat.Type == "private" {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, 0).First(&CurrentUser)
 		} else {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, msg.Chat.ID).First(&CurrentUser)
@@ -109,7 +111,7 @@ func currentUser(msg *tgbotapi.Message) {
 }
 
 func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" {
+	if msg.Chat.Type == "private" && msg.Chat.UserName != os.Getenv("ADMIN_USERNAME") && !CurrentRoute.Admin {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
 		return false
 	}
@@ -122,7 +124,7 @@ func findFunc() {
 }
 
 func findCommand(msg string) string {
-	return strings.Split(strings.Split(msg, " ")[0], "@")[0]
+	return strings.Split(strings.Fields(msg)[0], "@")[0]
 }
 
 func isError(msg *tgbotapi.Message) bool {

@@ -16,6 +16,7 @@ type Command struct {
 	Function    string `yaml:"function"`
 	LenArgs     string `yaml:"len_args"`
 	Description string `yaml:"description"`
+	Admin       bool   `yaml:Admin`
 }
 
 var Routes Route

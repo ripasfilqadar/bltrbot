@@ -6,7 +6,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-
 type User struct {
 	gorm.Model
 	UserName       string `json:"username" bson:"username"`
@@ -23,6 +22,9 @@ func (u *User) SetTarget(target int) {
 		u.RemainingToday = target
 	} else {
 		u.RemainingToday = target + u.RemainingToday - u.Target
+		if u.RemainingToday < 0 {
+			u.RemainingToday = 0
+		}
 	}
 	u.Target = target
 	db.MysqlDB().Save(u)

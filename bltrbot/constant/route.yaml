@@ -28,3 +28,11 @@ command:
   function: DetailOfMe
   len_args: 1
   description: Menampilkan detail anda
+ /recapitulation:
+  function: RecapitulationToday
+  len_args: 1
+  admin: true
+ /me_state_update:
+  function: UpdateStateUser
+  len_args: 2
+  description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
