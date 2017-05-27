@@ -65,7 +65,7 @@ func StartTelegram() {
 		currentUser(update.Message)
 
 		if CurrentUser == (model.User{}) {
-			if Msg.Command() != "/target" && Msg.Command() != "/help" {
+			if CurrentRoute.Scope != "user" {
 				Bot.ReplyToUser("Username anda belum terdaftar, silahkan daftar dengan /target target anda")
 				continue
 			} else {
@@ -100,7 +100,7 @@ func (t *Telegram) SendToUser(msg string, chat_id int64) {
 
 func currentUser(msg *tgbotapi.Message) {
 	if CurrentUser == (model.User{}) {
-		if CurrentRoute.Admin {
+		if CurrentRoute.Scope == "admin" {
 			db.MysqlDB().Where("user_name = ?", os.Getenv("ADMIN_USERNAME")).First(&CurrentUser)
 		} else if msg.Chat.Type == "private" {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, 0).First(&CurrentUser)
@@ -111,7 +111,7 @@ func currentUser(msg *tgbotapi.Message) {
 }
 
 func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" && msg.Chat.UserName != os.Getenv("ADMIN_USERNAME") && !CurrentRoute.Admin {
+	if msg.Chat.Type == "private" && msg.Chat.UserName != os.Getenv("ADMIN_USERNAME") && CurrentRoute.Scope == "admin" {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
 		return false
 	}

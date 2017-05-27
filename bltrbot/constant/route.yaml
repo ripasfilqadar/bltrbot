@@ -24,6 +24,7 @@ command:
   function: Help
   len_args: 1
   description: Menampilkan list perintah yang tersedia
+  scope: user
  /me:
   function: DetailOfMe
   len_args: 1
@@ -31,7 +32,7 @@ command:
  /recapitulation:
   function: RecapitulationToday
   len_args: 1
-  admin: true
+  scope: admin
  /me_state_update:
   function: UpdateStateUser
   len_args: 2
