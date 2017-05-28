@@ -6,9 +6,9 @@ command:
   description: Atur target harian anda (/target 10)
   scope: group
  /report:
-  function: TodayReport
-  len_args: 2
-  description: Laporkan Tilawah anda (/report 3)
+  function: TodayReportView
+  len_args: 1
+  description: Laporkan Tilawah anda
   scope: group
  /list_today:
   function: ListToday
@@ -57,6 +57,10 @@ command:
 #############callback###############################
  /update-user-state:
   function: UpdateStateUser
+  len_args: 2
+  scope: callback
+ /report-user-post:
+  function: TodayReport
   len_args: 2
   scope: callback
  /test2:

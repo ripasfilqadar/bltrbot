@@ -57,9 +57,14 @@ func StartTelegram() {
 		}
 		var updateMsg *tgbotapi.Message
 		if update.CallbackQuery != nil {
+			if update.CallbackQuery.Data == "finished" {
+				Bot.EditMessage("Action Finished", update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID)
+				continue
+			}
 			Msg = createMsgWithCallback(update.CallbackQuery)
 			updateMsg = update.CallbackQuery.Message
 			updateMsg.From = update.CallbackQuery.From
+			fmt.Println(update.CallbackQuery.Data)
 		} else {
 			Msg = createMsg(update.Message)
 			updateMsg = update.Message
@@ -118,6 +123,12 @@ func (t *Telegram) SendWithMarkup(markup tgbotapi.InlineKeyboardMarkup, msgText 
 	msg := tgbotapi.NewMessage(Msg.ChatID, msgText)
 	msg.ReplyMarkup = markup
 	Bot.Bot.Send(msg)
+}
+
+func (t *Telegram) EditMessageWithMarkup(replyMarkup tgbotapi.InlineKeyboardMarkup) {
+	fmt.Println("EditMessageWithMarkup")
+	msgBot := tgbotapi.NewEditMessageReplyMarkup(Msg.ChatID, Msg.MessageId, replyMarkup)
+	Bot.Bot.Send(msgBot)
 }
 
 func createMsgWithCallback(update *tgbotapi.CallbackQuery) model.Message {
@@ -210,6 +221,7 @@ func isError(msg *tgbotapi.Message) bool {
 			group := model.Group{}
 			db.MysqlDB().Model(&group).Where("group_id = ?", Msg.GroupId).Update("state", "inactive")
 		}
+		return true
 	}
 	return false
 }
@@ -237,11 +249,22 @@ func SetNilAllVar() {
 }
 
 func CreateInlineKeyboard(count int, data []string, text []string) tgbotapi.InlineKeyboardMarkup {
-	buttonrows := make([][]tgbotapi.InlineKeyboardButton, count)
-	for idx := range buttonrows {
+	count = (count + 1) / 2
+	buttonrows := make([][]tgbotapi.InlineKeyboardButton, count+1)
+	for idx := 0; idx < count*2; idx += 2 {
+		var row []tgbotapi.InlineKeyboardButton
 		button := tgbotapi.NewInlineKeyboardButtonData(text[idx], data[idx])
-		buttonrows[idx] = tgbotapi.NewInlineKeyboardRow(button)
+		if len(data) > idx+1 {
+			button_1 := tgbotapi.NewInlineKeyboardButtonData(text[idx+1], data[idx+1])
+			row = append(row, button, button_1)
+		} else {
+			row = append(row, button)
+		}
+		buttonrows[idx/2] = row
 	}
+	button := tgbotapi.NewInlineKeyboardButtonData("Done", "finished")
+	buttonrows[count] = tgbotapi.NewInlineKeyboardRow(button)
+	fmt.Println(buttonrows)
 	markup := tgbotapi.NewInlineKeyboardMarkup(buttonrows...)
 	return markup
 }

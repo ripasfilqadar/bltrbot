@@ -22,24 +22,27 @@ func (c *Controller) SetTarget() {
 
 func (c *Controller) TodayReport() {
 	fmt.Println("today report")
-	value, err := strconv.Atoi(Args[1])
-	if err == nil && value > 0 {
+	user_id, err := strconv.Atoi(Args[1])
+	fmt.Println(user_id)
+	if err == nil && user_id > 0 {
 		report_type := "tilawah"
-		remaining_today := CurrentUser.RemainingToday - value
+		user := model.User{}
+		db.MysqlDB().First(&user, user_id)
+		remaining_today := 0
 		if remaining_today < 0 {
 			remaining_today = 0
 		}
-		db.MysqlDB().Model(&CurrentUser).Update("remaining_today", remaining_today)
+		db.MysqlDB().Model(&user).Update("remaining_today", remaining_today)
 
-		report := model.Report{UserId: CurrentUser.ID, Value: value, Type: report_type}
+		report := model.Report{UserId: user.ID, Value: user.Target, Type: report_type, ActorId: CurrentUser.ID}
 		db.MysqlDB().Create(&report)
-		var msg string
-		if CurrentUser.RemainingToday == 0 {
-			msg = "Target kamu hari ini sudah tercapai"
+		users, data, text := createUserListInline(Msg.GroupId)
+		if len(users) == 0 {
+			Bot.EditMessage("Semua Anggota sudah melakukan report", Msg.ChatID, Msg.MessageId)
 		} else {
-			msg = "Laporan berhasil dimasukkan, sisa tilawah anda adalah " + strconv.Itoa(CurrentUser.RemainingToday) + " halaman"
+			markup := CreateInlineKeyboard(len(users), data, text)
+			Bot.EditMessageWithMarkup(markup)
 		}
-		Bot.ReplyToUser(msg)
 	} else {
 		Bot.ReplyToUser("Nilai yang anda masukkan salah")
 	}
@@ -109,4 +112,27 @@ func (c *Controller) UpdateStateUser() {
 	} else {
 		Bot.ReplyToUser("Status tidak valid, pilihan status (cuti/active)")
 	}
+}
+
+func (c *Controller) TodayReportView() {
+	users, data, text := createUserListInline(Msg.GroupId)
+	fmt.Println("TodayReportView")
+	if len(users) == 0 {
+		Bot.SendToGroup(Msg.GroupId, "Semua anggota sudah melakukan report")
+	} else {
+		markup := CreateInlineKeyboard(len(users), data, text)
+		fmt.Println(markup)
+		Bot.SendWithMarkup(markup, "Remove from list")
+	}
+}
+
+func createUserListInline(group_id int64) ([]model.User, []string, []string) {
+	users := []model.User{}
+	db.MysqlDB().Where("group_id = ? and state = ? and remaining_today > 0", group_id, "active").Find(&users)
+	var data, text []string
+	for _, user := range users {
+		data = append(data, `{"controller": "/report-user-post", "data":"`+strconv.Itoa(int(user.ID))+`"}`)
+		text = append(text, user.FullName)
+	}
+	return users, data, text
 }

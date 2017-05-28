@@ -6,7 +6,8 @@ import (
 
 type Report struct {
 	gorm.Model
-	UserId uint
-	Type   string
-	Value  int
+	UserId  uint
+	Type    string
+	Value   int
+	ActorId uint
 }

@@ -18,29 +18,3 @@ type Message struct {
 func (msg *Message) Command() string {
   return strings.Split(strings.Split(msg.Message, " ")[0], "@")[0]
 }
-
-//type MessageInterface interface {
-//  SerializeMessage()
-//}
-
-//func SetMessage(user *User, message string, message_id int, date int, chat_id int64, chat_type string) *Message {
-//  return &Message{user, message, message_id, date, chat_id, chat_type}
-//}
-
-//func (msg *Message) SetCommand() string {
-//  var command string
-//  if msg.ChatType == "group" {
-//    r, _ := regexp.Compile("(.*?)" + config.BOT_USERNAME)
-//    // fmt.Println(r)
-//    command = r.FindStringSubmatch(msg.Message)[1]
-//  } else {
-//    command = strings.Split(msg.Message, " ")[0]
-//  }
-//  return command
-//}
-
-//// func (msg *Message)() {
-////   command_temp := msg.Message.split(" ")
-////   // msg.
-
-//// }
