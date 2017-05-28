@@ -1,5 +1,9 @@
 package main
 
 func (c *Controller) RecapitulationToday() {
-	updateRemaining()
+  updateRemaining()
+}
+
+func (c *Controller) ReminderUser() {
+  reminderUser()
 }

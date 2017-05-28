@@ -21,7 +21,6 @@ func (c *Controller) Help() {
   }
   Bot.ReplyToUser(template)
 }
-
 func (c *Controller) Testing() {
   buttonrows := make([][]tgbotapi.InlineKeyboardButton, 2)
   button := tgbotapi.NewInlineKeyboardButtonData("text", "data")

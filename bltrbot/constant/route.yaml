@@ -25,6 +25,11 @@ command:
   len_args: 2
   description: Untuk Membayar Iqob (/paid-iqob total_iqob)
   scope: group
+ /me_state_update:
+  function: UpdateStateUserView
+  len_args: 1
+  description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
+  scope: group
  /help:
   function: Help
   len_args: 1
@@ -39,11 +44,10 @@ command:
   function: RecapitulationToday
   len_args: 1
   scope: admin
- /me_state_update:
-  function: UpdateStateUserView
+ /reminder_user:
+  function: ReminderUser
   len_args: 1
-  description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
-  scope: group
+  scope: admin
  /update-user-state:
   function: UpdateStateUser
   len_args: 2

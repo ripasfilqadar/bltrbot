@@ -31,9 +31,10 @@ func reminderUser() {
 		db.MysqlDB().Where("group_id = ? and remaining_today > 0 and state = ?", group.GroupId, "active").Find(&users)
 		var username_users string
 		for idx, user := range users {
+			fmt.Println(user)
 			username_users += strconv.Itoa(idx+1) + ") " + Emoji["not_confirm"] + user.FullName + "(@" + user.UserName + ") (" + strconv.Itoa(user.RemainingToday) + ")\n"
 			fmt.Println(username_users)
-			Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)
+			go Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)
 		}
 		Bot.SendToGroup(group.GroupId, template+username_users)
 	}
@@ -52,6 +53,7 @@ func updateRemaining() {
 		var username_users string
 		template += ListMemberToday(users)
 		for idx, user := range users {
+			fmt.Println(user)
 			if user.RemainingToday > 0 {
 				if user.State != "active" {
 					continue
