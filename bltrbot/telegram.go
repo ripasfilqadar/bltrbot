@@ -59,6 +59,7 @@ func StartTelegram() {
 		if update.CallbackQuery != nil {
 			Msg = createMsgWithCallback(update.CallbackQuery)
 			updateMsg = update.CallbackQuery.Message
+			updateMsg.From = update.CallbackQuery.From
 		} else {
 			Msg = createMsg(update.Message)
 			updateMsg = update.Message
@@ -155,7 +156,7 @@ func currentUser(msg *tgbotapi.Message) {
 	if CurrentUser == (model.User{}) {
 		fmt.Println("current user")
 		fmt.Println(msg.Chat.ID)
-		fmt.Println(msg.From.UserName)
+		fmt.Println(msg.Chat.UserName)
 		fmt.Println(msg.Chat.Type)
 		if CurrentRoute.Scope == "admin" {
 			db.MysqlDB().Where("user_name = ?", os.Getenv("ADMIN_USERNAME")).First(&CurrentUser)

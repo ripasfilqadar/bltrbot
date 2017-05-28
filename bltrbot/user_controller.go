@@ -101,6 +101,8 @@ func (c *Controller) UpdateStateUserView() {
 
 func (c *Controller) UpdateStateUser() {
 	state := Args[1]
+	fmt.Println("lalala")
+	fmt.Println(CurrentUser)
 	if state == "cuti" || state == "active" {
 		db.MysqlDB().Model(&CurrentUser).Update("state", state)
 		Bot.EditMessage("Status berhasil diupdate", Msg.ChatID, Msg.MessageId)
