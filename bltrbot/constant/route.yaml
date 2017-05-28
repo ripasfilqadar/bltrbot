@@ -30,6 +30,7 @@ command:
   len_args: 1
   description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
   scope: group
+#############USER##############################
  /help:
   function: Help
   len_args: 1
@@ -40,6 +41,7 @@ command:
   len_args: 1
   description: Menampilkan detail anda
   scope: user
+################ADMIN###############################
  /recapitulation:
   function: RecapitulationToday
   len_args: 1
@@ -48,6 +50,11 @@ command:
   function: ReminderUser
   len_args: 1
   scope: admin
+ /broadcast:
+   function: BroadcastMessage
+   len_args: 1
+   scope: admin
+#############callback###############################
  /update-user-state:
   function: UpdateStateUser
   len_args: 2
