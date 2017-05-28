@@ -92,12 +92,18 @@ func (c *Controller) DetailOfMe() {
 	Bot.ReplyToUser(template)
 }
 
+func (c *Controller) UpdateStateUserView() {
+	data := []string{`{"controller": "/update-user-state", "data":"active"}`, `{"controller": "/update-user-state", "data":"cuti"}`}
+	text := []string{"active", "cuti"}
+	markup := CreateInlineKeyboard(2, data, text)
+	Bot.SendWithMarkup(markup, "Update Status Anda")
+}
+
 func (c *Controller) UpdateStateUser() {
-	fmt.Println("ladasdasd")
 	state := Args[1]
 	if state == "cuti" || state == "active" {
 		db.MysqlDB().Model(&CurrentUser).Update("state", state)
-		Bot.ReplyToUser("Status Berhasil diubah")
+		Bot.EditMessage("Status berhasil diupdate", Msg.ChatID, Msg.MessageId)
 	} else {
 		Bot.ReplyToUser("Status tidak valid, pilihan status (cuti/active)")
 	}

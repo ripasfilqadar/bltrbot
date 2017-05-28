@@ -4,22 +4,27 @@ command:
   function: SetTarget
   len_args: 2
   description: Atur target harian anda (/target 10)
+  scope: group
  /report:
   function: TodayReport
   len_args: 2
   description: Laporkan Tilawah anda (/report 3)
+  scope: group
  /list_today:
   function: ListToday
   len_args: 1
   description: Menampilkan Detail Tilawah Semua member hari ini
+  scope: group
  /list_iqob:
   function: ListIqob
   len_args: 1
   description: Menampilkan semua list Iqob yang belum dibayar, (/listiqob 5), 5 adalah bulan ke 5
+  scope: group
  /paid_iqob:
   function: PaidIqob
   len_args: 2
   description: Untuk Membayar Iqob (/paid-iqob total_iqob)
+  scope: group
  /help:
   function: Help
   len_args: 1
@@ -29,11 +34,21 @@ command:
   function: DetailOfMe
   len_args: 1
   description: Menampilkan detail anda
+  scope: user
  /recapitulation:
   function: RecapitulationToday
   len_args: 1
   scope: admin
  /me_state_update:
+  function: UpdateStateUserView
+  len_args: 1
+  description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
+  scope: group
+ /update-user-state:
   function: UpdateStateUser
   len_args: 2
-  description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
+  scope: callback
+ /test2:
+  function: Testing2
+  len_args: 1
+  scope: callback

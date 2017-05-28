@@ -1,41 +1,42 @@
 package model
 
 import (
-	"strings"
+  "strings"
 )
 
 type Message struct {
-	UserName  string `json:"user_name" bson: "user_name"`
-	Message   string `json:"message" bson: "message"`
-	MessageId int    `json:"message_id" bson: "message_id"`
-	Date      int    `json:"date" bson: "date"`
-	ChatID    int64  `json:"chat_id" bson: "chat_id"`
-	Type      string
-	GroupId   int64
+  UserName    string `json:"user_name" bson: "user_name"`
+  Message     string `json:"message" bson: "message"`
+  MessageId   int    `json:"message_id" bson: "message_id"`
+  Date        int    `json:"date" bson: "date"`
+  ChatID      int64  `json:"chat_id" bson: "chat_id"`
+  Type        string
+  GroupId     int64
+  GroupTittle string
 }
 
 func (msg *Message) Command() string {
-	return strings.Split(strings.Split(msg.Message, " ")[0], "@")[0]
+  return strings.Split(strings.Split(msg.Message, " ")[0], "@")[0]
 }
 
 //type MessageInterface interface {
-//	SerializeMessage()
+//  SerializeMessage()
 //}
 
 //func SetMessage(user *User, message string, message_id int, date int, chat_id int64, chat_type string) *Message {
-//	return &Message{user, message, message_id, date, chat_id, chat_type}
+//  return &Message{user, message, message_id, date, chat_id, chat_type}
 //}
 
 //func (msg *Message) SetCommand() string {
-//	var command string
-//	if msg.ChatType == "group" {
-//		r, _ := regexp.Compile("(.*?)" + config.BOT_USERNAME)
-//		// fmt.Println(r)
-//		command = r.FindStringSubmatch(msg.Message)[1]
-//	} else {
-//		command = strings.Split(msg.Message, " ")[0]
-//	}
-//	return command
+//  var command string
+//  if msg.ChatType == "group" {
+//    r, _ := regexp.Compile("(.*?)" + config.BOT_USERNAME)
+//    // fmt.Println(r)
+//    command = r.FindStringSubmatch(msg.Message)[1]
+//  } else {
+//    command = strings.Split(msg.Message, " ")[0]
+//  }
+//  return command
 //}
 
 //// func (msg *Message)() {

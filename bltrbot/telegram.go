@@ -17,6 +17,8 @@ import (
 
 	"os"
 
+	"encoding/json"
+
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -46,29 +48,38 @@ func StartTelegram() {
 	u.Timeout = 60
 	updates, _ := Bot.Bot.GetUpdatesChan(u)
 	for update := range updates {
-		var group_id int64
+		if update.CallbackQuery != nil {
+			fmt.Println(update.CallbackQuery.Data)
+		}
 
 		if update.EditedMessage != nil {
 			continue
 		}
-		if update.Message.Chat.Type == "private" {
-			group_id = 0
+		var updateMsg *tgbotapi.Message
+		if update.CallbackQuery != nil {
+			Msg = createMsgWithCallback(update.CallbackQuery)
+			updateMsg = update.CallbackQuery.Message
 		} else {
-			group_id = update.Message.Chat.ID
+			Msg = createMsg(update.Message)
+			updateMsg = update.Message
 		}
-		Msg = model.Message{Message: update.Message.Text, MessageId: update.Message.MessageID, Date: update.Message.Date, ChatID: update.Message.Chat.ID, Type: update.Message.Chat.Type, GroupId: group_id}
+
+		fmt.Println("123")
+
+		fmt.Println(updateMsg)
+		fmt.Println("123")
 		CurrentRoute = Routes.Command[Msg.Command()]
-		Args = strings.Fields(Msg.Message)
-		if isError(update.Message) {
+		if isError(updateMsg) {
 			continue
 		}
-		currentUser(update.Message)
+
+		if !checkRouteAndCommand() {
+			continue
+		}
+		currentUser(updateMsg)
 
 		if CurrentUser == (model.User{}) {
-			if CurrentRoute.Scope != "user" {
-				Bot.ReplyToUser("Username anda belum terdaftar, silahkan daftar dengan /target target anda")
-				continue
-			} else {
+			if CurrentRoute.Scope == "user" || CurrentRoute.Scope == "group" {
 				CurrentUser = model.User{UserName: update.Message.From.UserName, FullName: update.Message.From.FirstName + " " + update.Message.From.LastName, State: "active", ChatId: int64(update.Message.From.ID), GroupId: Msg.GroupId}
 				db.MysqlDB().Create(&CurrentUser)
 			}
@@ -88,6 +99,11 @@ func (t *Telegram) ReplyToUser(msg string) {
 	Bot.Bot.Send(MsgBot)
 }
 
+func (t *Telegram) EditMessage(msg string, chat_id int64, msg_id int) {
+	msgBot := tgbotapi.NewEditMessageText(chat_id, msg_id, msg)
+	Bot.Bot.Send(msgBot)
+}
+
 func (t *Telegram) SendToGroup(group_id int64, msg string) {
 	MsgBot = tgbotapi.NewMessage(group_id, msg)
 	Bot.Bot.Send(MsgBot)
@@ -97,9 +113,50 @@ func (t *Telegram) SendToUser(msg string, chat_id int64) {
 	MsgBot = tgbotapi.NewMessage(chat_id, msg)
 	Bot.Bot.Send(MsgBot)
 }
+func (t *Telegram) SendWithMarkup(markup tgbotapi.InlineKeyboardMarkup, msgText string) {
+	msg := tgbotapi.NewMessage(Msg.ChatID, msgText)
+	msg.ReplyMarkup = markup
+	Bot.Bot.Send(msg)
+}
+
+func createMsgWithCallback(update *tgbotapi.CallbackQuery) model.Message {
+	msg := model.Message{}
+	err := json.Unmarshal([]byte(update.Data), &CallbackMsg)
+	fmt.Println(CallbackMsg.Controller)
+	var group_id int64
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		if update.Message.Chat.Type == "private" {
+			group_id = 0
+		} else {
+			group_id = update.Message.Chat.ID
+		}
+		msg = model.Message{Message: CallbackMsg.Controller + " " + CallbackMsg.Data, MessageId: update.Message.MessageID, Date: update.Message.Date, ChatID: update.Message.Chat.ID, Type: update.Message.Chat.Type, GroupId: group_id}
+	}
+	Args = strings.Fields(msg.Message)
+	return msg
+}
+
+func createMsg(message *tgbotapi.Message) model.Message {
+	var group_id int64
+	if message.Chat.Type == "private" {
+		group_id = 0
+	} else {
+		group_id = message.Chat.ID
+	}
+	msg := model.Message{Message: message.Text, MessageId: message.MessageID, Date: message.Date, ChatID: message.Chat.ID, Type: message.Chat.Type, GroupId: group_id}
+	Args = strings.Fields(msg.Message)
+	return msg
+
+}
 
 func currentUser(msg *tgbotapi.Message) {
 	if CurrentUser == (model.User{}) {
+		fmt.Println("current user")
+		fmt.Println(msg.Chat.ID)
+		fmt.Println(msg.From.UserName)
+		fmt.Println(msg.Chat.Type)
 		if CurrentRoute.Scope == "admin" {
 			db.MysqlDB().Where("user_name = ?", os.Getenv("ADMIN_USERNAME")).First(&CurrentUser)
 		} else if msg.Chat.Type == "private" {
@@ -153,10 +210,13 @@ func isError(msg *tgbotapi.Message) bool {
 			db.MysqlDB().Model(&group).Where("group_id = ?", Msg.GroupId).Update("state", "inactive")
 		}
 	}
+	return false
+}
 
+func checkRouteAndCommand() bool {
 	if CurrentRoute.Function == "" {
 		Bot.ReplyToUser("Perintah tidak ditemukan")
-		return true
+		return false
 	}
 	len_args, _ := strconv.Atoi(CurrentRoute.LenArgs)
 
@@ -164,13 +224,28 @@ func isError(msg *tgbotapi.Message) bool {
 		fmt.Println(CurrentRoute.Function)
 		fmt.Println(len(Args))
 		Bot.ReplyToUser("Perintah anda tidak sesuai")
-		return true
+		return false
 	}
-	return false
+	return true
 }
 
 func SetNilAllVar() {
 	CurrentUser = model.User{}
 	Msg = model.Message{}
 	CurrentRoute = Command{}
+}
+
+func CreateInlineKeyboard(count int, data []string, text []string) tgbotapi.InlineKeyboardMarkup {
+	buttonrows := make([][]tgbotapi.InlineKeyboardButton, count)
+	for idx := range buttonrows {
+		button := tgbotapi.NewInlineKeyboardButtonData(text[idx], data[idx])
+		buttonrows[idx] = tgbotapi.NewInlineKeyboardRow(button)
+	}
+	markup := tgbotapi.NewInlineKeyboardMarkup(buttonrows...)
+	return markup
+}
+
+func CreateMsgConfig() tgbotapi.MessageConfig {
+	msg := tgbotapi.NewMessage(CurrentUser.ChatId, "Update Status Anda")
+	return msg
 }

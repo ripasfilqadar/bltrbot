@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	//	"reflect"
 
+	//	"encoding/json"
+
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,7 +21,15 @@ type Command struct {
 	Scope       string `yaml:scope`
 }
 
+type CallbackMessage struct {
+	Controller string `json:"controller"`
+	Data       string `json:"data"`
+	MessageId  string `json:"message_id"`
+}
+
 var Routes Route
+
+var CallbackMsg CallbackMessage
 
 func InitRoute() {
 	source, err := ioutil.ReadFile("constant/route.yaml")
