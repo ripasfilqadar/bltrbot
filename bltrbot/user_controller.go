@@ -34,7 +34,7 @@ func (c *Controller) TodayReport() {
 		}
 		db.MysqlDB().Model(&user).Update("remaining_today", remaining_today)
 
-		report := model.Report{UserId: user.ID, Value: user.Target, Type: report_type, ActorId: CurrentUser.ID}
+		report := model.Report{UserId: user.ID, Type: report_type, ActorId: CurrentUser.ID}
 		db.MysqlDB().Create(&report)
 		users, data, text := createUserListInline(Msg.GroupId)
 		if len(users) == 0 {

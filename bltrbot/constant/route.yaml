@@ -28,7 +28,7 @@ command:
  /me_state_update:
   function: UpdateStateUserView
   len_args: 1
-  description: "Mengubah status anda, seperti ketika cuti (/me_state_update cuti)"
+  description: "Mengubah status anda, seperti ketika cuti "
   scope: group
 #############USER##############################
  /help:
