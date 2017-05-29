@@ -3,7 +3,8 @@ package main
 import (
   "strconv"
 
-  "github.com/go-telegram-bot-api/telegram-bot-api"
+  "github.com/ripasfilqadar/bltrbot/bltrbot/model"
+  "github.com/ripasfilqadar/bltrbot/bltrbot/db"
 )
 
 type Controller struct{}
@@ -21,26 +22,26 @@ func (c *Controller) Help() {
   }
   Bot.ReplyToUser(template)
 }
-func (c *Controller) Testing() {
-  buttonrows := make([][]tgbotapi.InlineKeyboardButton, 2)
-  button := tgbotapi.NewInlineKeyboardButtonData("text", "data")
-  button2 := tgbotapi.NewInlineKeyboardButtonData("text", "data2")
-  buttonrows[0] = tgbotapi.NewInlineKeyboardRow(button)
-  buttonrows[1] = tgbotapi.NewInlineKeyboardRow(button2)
-  markup := tgbotapi.NewInlineKeyboardMarkup(buttonrows...)
-  msg := tgbotapi.NewMessage(CurrentUser.ChatId, "hi")
-  msg.ReplyMarkup = markup
-  Bot.Bot.Send(msg)
+
+func (c *Controller) HelpAdmin() {
+  template := "List Perintah yang tersedia\n"
+  index := 1
+  for key, command := range Routes.Command {
+    if command.Scope == "admin" {
+      template += strconv.Itoa(index) + " ). " + key + " - " + command.Description + " \n"
+      index++
+    }
+  }
+  Bot.ReplyToUser(template)
 }
 
-func (c *Controller) Testing2() {
-  buttonrows := make([][]tgbotapi.InlineKeyboardButton, 2)
-  button := tgbotapi.NewInlineKeyboardButtonData("text", "data")
-  button2 := tgbotapi.NewInlineKeyboardButtonData("text", "data2")
-  buttonrows[0] = tgbotapi.NewInlineKeyboardRow(button)
-  buttonrows[1] = tgbotapi.NewInlineKeyboardRow(button2)
-  markup := tgbotapi.NewInlineKeyboardMarkup(buttonrows...)
-  msg := tgbotapi.NewMessage(CurrentUser.ChatId, "hi")
-  msg.ReplyMarkup = markup
-  Bot.Bot.Send(msg)
+func (c *Controller) SetAdmin() {
+  user := model.User{}
+  db.MysqlDB().Where("user_name = ?", Args[1]).First(&user)
+  if user == (model.User{}){
+    Bot.ReplyToUser("Username tidak ditemukan")
+  }else{
+    db.MysqlDB().Model(&user).Update("scope", "admin")
+    Bot.ReplyToUser("@"+Args[1]+ " berhasil ditambahkan ke admin")
+  }
 }

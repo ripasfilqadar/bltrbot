@@ -36,7 +36,11 @@ func reminderUser() {
 			fmt.Println(username_users)
 			go Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)
 		}
-		Bot.SendToGroup(group.GroupId, template+username_users)
+		if len(users) == 0{
+			Bot.SendToGroup(group.GroupId, "Semua User sudah laporan")
+		}else{
+				Bot.SendToGroup(group.GroupId, template+username_users)
+		}
 	}
 }
 

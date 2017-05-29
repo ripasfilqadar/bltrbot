@@ -15,6 +15,7 @@ type User struct {
 	State          string
 	ChatId         int64
 	GroupId        int64
+	Scope					string
 }
 
 func (u *User) SetTarget(target int) {

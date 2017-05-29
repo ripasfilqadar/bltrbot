@@ -51,14 +51,27 @@ command:
   function: RecapitulationToday
   len_args: 1
   scope: admin
+  description: Manual Recapitulation
  /reminder_user:
   function: ReminderUser
   len_args: 1
   scope: admin
+  description: Manual Reminder User For Report
  /broadcast:
    function: BroadcastMessage
    len_args: 1
    scope: admin
+   description: Broadcast Message to All Group
+ /admin_help:
+  function: HelpAdmin
+  len_args: 1
+  scope: admin
+  description: Show Command List For Admin Only
+ /set_admin:
+  function: SetAdmin
+  len_args: 2
+  scope: admin
+  description: Set A User be Admin
 #############callback###############################
  /update-user-state:
   function: UpdateStateUser

@@ -75,6 +75,9 @@ func StartTelegram() {
 		fmt.Println(updateMsg)
 		fmt.Println("123")
 		CurrentRoute = Routes.Command[Msg.Command()]
+
+		currentUser(updateMsg)
+
 		if isError(updateMsg) {
 			continue
 		}
@@ -82,14 +85,7 @@ func StartTelegram() {
 		if !checkRouteAndCommand() {
 			continue
 		}
-		currentUser(updateMsg)
 
-		if CurrentUser == (model.User{}) {
-			if CurrentRoute.Scope == "user" || CurrentRoute.Scope == "group" {
-				CurrentUser = model.User{UserName: update.Message.From.UserName, FullName: update.Message.From.FirstName + " " + update.Message.From.LastName, State: "active", ChatId: int64(update.Message.From.ID), GroupId: Msg.GroupId}
-				db.MysqlDB().Create(&CurrentUser)
-			}
-		}
 		Msg.UserName = CurrentUser.UserName
 		db.MongoDB("message").Insert(Msg)
 		findFunc()
@@ -169,18 +165,22 @@ func currentUser(msg *tgbotapi.Message) {
 		fmt.Println(msg.Chat.ID)
 		fmt.Println(msg.Chat.UserName)
 		fmt.Println(msg.Chat.Type)
-		if CurrentRoute.Scope == "admin" {
-			db.MysqlDB().Where("user_name = ?", os.Getenv("ADMIN_USERNAME")).First(&CurrentUser)
-		} else if msg.Chat.Type == "private" {
+		if msg.Chat.Type == "private" {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, 0).First(&CurrentUser)
 		} else {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, msg.Chat.ID).First(&CurrentUser)
+		}
+		if CurrentUser == (model.User{}) {
+			if CurrentRoute.Scope == "user" || CurrentRoute.Scope == "group" {
+				CurrentUser = model.User{UserName: msg.From.UserName, FullName: msg.From.FirstName + " " + msg.From.LastName, State: "active", ChatId: int64(msg.From.ID), GroupId: Msg.GroupId, Scope: "user"}
+				db.MysqlDB().Create(&CurrentUser)
+			}
 		}
 	}
 }
 
 func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" && msg.Chat.UserName != os.Getenv("ADMIN_USERNAME") && CurrentRoute.Scope == "admin" {
+	if msg.Chat.Type == "private" && CurrentUser.Scope == "admin" && CurrentRoute.Scope == "admin" {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
 		return false
 	}
