@@ -180,7 +180,7 @@ func currentUser(msg *tgbotapi.Message) {
 }
 
 func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" && CurrentUser.Scope == "admin" && CurrentRoute.Scope == "admin" {
+	if msg.Chat.Type == "private" && CurrentUser.Scope != "admin" && CurrentRoute.Scope == "admin" {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
 		return false
 	}
