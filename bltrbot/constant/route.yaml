@@ -18,7 +18,12 @@ command:
  /list_iqob:
   function: ListIqob
   len_args: 1
-  description: Menampilkan semua list Iqob yang belum dibayar, (/listiqob 5), 5 adalah bulan ke 5
+  description: Menampilkan semua list Iqob yang belum dibayar, (/list_iqob 5), 5 adalah bulan ke 5
+  scope: group
+ /list_all_iqob:
+  function: ListAllIqob
+  len_args: 1
+  description: Menampilkan semua list Iqob, (/list_all_iqob 5), 5 adalah bulan ke 5
   scope: group
  /paid_iqob:
   function: PaidIqob

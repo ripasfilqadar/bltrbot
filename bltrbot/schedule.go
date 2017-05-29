@@ -68,7 +68,7 @@ func updateRemaining() {
 			db.MysqlDB().Model(&user).Update("remaining_today", user.Target)
 		}
 		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
-		template += createIqobList(users, nil, nil)
+		template += createIqobList(users, nil, nil, "state = 'not_paid'")
 		Bot.SendToGroup(group.GroupId, template)
 	}
 }
