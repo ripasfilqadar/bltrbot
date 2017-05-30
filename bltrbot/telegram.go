@@ -226,6 +226,9 @@ func isError(msg *tgbotapi.Message) bool {
 	if !onlyForGroup(msg) {
 		return true
 	}
+	if msg.ReplyToMessage != nil {
+		return true
+	}
 	if msg.NewChatMember != nil {
 		if msg.NewChatMember.UserName == os.Getenv("TELEGRAM_USERNAME") {
 			group := model.Group{}
