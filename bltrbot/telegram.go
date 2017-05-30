@@ -59,7 +59,7 @@ func StartTelegram() {
 		fmt.Println("start")
 
 		Bot.Bot.RemoveWebhook()
-
+		fmt.Println(os.Getenv("URL_HOST"))
 		_, err := Bot.Bot.SetWebhook(tgbotapi.NewWebhook(os.Getenv("URL_HOST") + "/" + Bot.Bot.Token))
 		if err != nil {
 			log.Fatal(err)
