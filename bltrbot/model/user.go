@@ -30,3 +30,15 @@ func (u *User) SetTarget(target int) {
 	u.Target = target
 	db.MysqlDB().Save(u)
 }
+
+func (u *User) IsAdmin() bool {
+	return u.Scope == "admin" || u.Scope == "superadmin"
+}
+
+func (u *User) IsSuperAdmin() bool {
+	return u.Scope == "superadmin"
+}
+
+func (u *User) IsNormallyUser() bool {
+	return u.Scope == "user"
+}

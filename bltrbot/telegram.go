@@ -8,12 +8,13 @@ import (
 
 	"strings"
 
+	"github.com/ripasfilqadar/bltrbot/bltrbot/helper"
 	"github.com/ripasfilqadar/bltrbot/bltrbot/model"
 
-	//	"log"
+	"log"
 	"strconv"
 
-	//	"net/http"
+	"net/http"
 
 	"os"
 
@@ -44,9 +45,30 @@ func InitTelegram() {
 }
 
 func StartTelegram() {
-	u := tgbotapi.NewUpdate(1)
-	u.Timeout = 60
-	updates, _ := Bot.Bot.GetUpdatesChan(u)
+	var updates tgbotapi.UpdatesChannel
+	if !helper.IsProduction() {
+		u := tgbotapi.NewUpdate(1)
+		u.Timeout = 60
+		updates, _ = Bot.Bot.GetUpdatesChan(u)
+	} else {
+		port := os.Getenv("PORT")
+		if port == "" {
+			log.Fatal("$PORT must be set")
+		}
+
+		fmt.Println("start")
+
+		Bot.Bot.RemoveWebhook()
+
+		_, err := Bot.Bot.SetWebhook(tgbotapi.NewWebhook(os.Getenv("URL_HOST") + "/" + Bot.Bot.Token))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		updates = Bot.Bot.ListenForWebhook("/" + Bot.Bot.Token)
+
+		go http.ListenAndServe("0.0.0.0:"+port, nil)
+	}
 	for update := range updates {
 		if update.CallbackQuery != nil {
 			fmt.Println(update.CallbackQuery.Data)
@@ -166,7 +188,7 @@ func currentUser(msg *tgbotapi.Message) {
 		fmt.Println(msg.Chat.UserName)
 		fmt.Println(msg.Chat.Type)
 		if msg.Chat.Type == "private" {
-			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, 0).First(&CurrentUser)
+			db.MysqlDB().Where("user_name = ?", msg.From.UserName).First(&CurrentUser)
 		} else {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, msg.Chat.ID).First(&CurrentUser)
 		}
@@ -180,8 +202,12 @@ func currentUser(msg *tgbotapi.Message) {
 }
 
 func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" && CurrentUser.Scope != "admin" && CurrentRoute.Scope == "admin" {
+	if msg.Chat.Type == "private" && CurrentUser.IsNormallyUser() && CurrentRoute.Scope == "admin" {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
+		return false
+	}
+	if CurrentUser.IsNormallyUser() && CurrentRoute.Scope == "admin" {
+		Bot.ReplyToUser("Perintah yang anda masukkan salah")
 		return false
 	}
 	return true
@@ -248,7 +274,7 @@ func SetNilAllVar() {
 	CurrentRoute = Command{}
 }
 
-func CreateInlineKeyboard(count int, data []string, text []string) tgbotapi.InlineKeyboardMarkup {
+func CreateInlineKeyboard(count int, data []string, text []string, lastData string) tgbotapi.InlineKeyboardMarkup {
 	count = (count + 1) / 2
 	buttonrows := make([][]tgbotapi.InlineKeyboardButton, count+1)
 	for idx := 0; idx < count*2; idx += 2 {
@@ -262,7 +288,12 @@ func CreateInlineKeyboard(count int, data []string, text []string) tgbotapi.Inli
 		}
 		buttonrows[idx/2] = row
 	}
-	button := tgbotapi.NewInlineKeyboardButtonData("Done", "finished")
+	if lastData == "" {
+		lastData = "finished"
+	}
+	fmt.Println("lastData")
+	fmt.Println(lastData)
+	button := tgbotapi.NewInlineKeyboardButtonData("Done", lastData)
 	buttonrows[count] = tgbotapi.NewInlineKeyboardRow(button)
 	fmt.Println(buttonrows)
 	markup := tgbotapi.NewInlineKeyboardMarkup(buttonrows...)
