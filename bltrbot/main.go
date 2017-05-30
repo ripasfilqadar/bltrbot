@@ -33,11 +33,12 @@ func main() {
 }
 
 func InitDB() {
-	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{}, &model.Iqob{}, &model.Group{})
+	db.MysqlDB().AutoMigrate(&model.User{}, &model.Report{}, &model.Iqob{}, &model.Group{}, &model.Message{})
 	db.MysqlDB().Model(&model.User{}).AddIndex("group_id", "user_name", "state")
 	db.MysqlDB().Model(&model.Report{}).AddIndex("user_id", "type", "actor_id")
 	db.MysqlDB().Model(&model.Iqob{}).AddIndex("user_id", "state")
 	db.MysqlDB().Model(&model.Group{}).AddIndex("group_id")
+	db.MysqlDB().Model(&model.Message{}).AddIndex("user_name")
 }
 
 func initEnv() {

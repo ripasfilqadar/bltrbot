@@ -5,14 +5,15 @@ import (
   "os"
 )
 
+var mgoSession *mgo.Session
+
 func MongoDB(collection_name string) *mgo.Collection {
-	session, err := mgo.Dial(os.Getenv("MONGO_DATABASE_HOST"))
-	if err != nil {
-		panic(err)
+	if mgoSession == nil{
+		mgoSession, _ = mgo.Dial(os.Getenv("MONGO_DATABASE_HOST"))
 	}
 
-	session.SetMode(mgo.Monotonic, true)
-	db := session.DB(os.Getenv("MONGO_DATABASE_NAME"))
+	mgoSession.SetMode(mgo.Monotonic, true)
+	db := mgoSession.DB(os.Getenv("MONGO_DATABASE_NAME"))
 	collection := db.C(collection_name)
 	return collection
 }

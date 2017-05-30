@@ -22,29 +22,37 @@ func (c *Controller) SetTarget() {
 
 func (c *Controller) TodayReport() {
 	fmt.Println("today report")
-	user_id, err := strconv.Atoi(Args[1])
-	fmt.Println(user_id)
-	if err == nil && user_id > 0 {
-		report_type := "tilawah"
-		user := model.User{}
-		db.MysqlDB().First(&user, user_id)
-		remaining_today := 0
-		if remaining_today < 0 {
-			remaining_today = 0
-		}
-		db.MysqlDB().Model(&user).Update("remaining_today", remaining_today)
+	fmt.Println(Args[1])
+	if Args[1] == "done"{
+		users := []model.User{}
+		db.MysqlDB().Where("group_id = ?", Msg.GroupId).Find(&users)
+		template := ListMemberToday(users)
+		Bot.EditMessage(template, Msg.ChatID, Msg.MessageId)
+	}else{
+		user_id, err := strconv.Atoi(Args[1])
+		fmt.Println(user_id)
+		if err == nil && user_id > 0 {
+			report_type := "tilawah"
+			user := model.User{}
+			db.MysqlDB().First(&user, user_id)
+			remaining_today := 0
+			if remaining_today < 0 {
+				remaining_today = 0
+			}
+			db.MysqlDB().Model(&user).Update("remaining_today", remaining_today)
 
-		report := model.Report{UserId: user.ID, Type: report_type, ActorId: CurrentUser.ID}
-		db.MysqlDB().Create(&report)
-		users, data, text := createUserListInline(Msg.GroupId)
-		if len(users) == 0 {
-			Bot.EditMessage("Semua Anggota sudah melakukan report", Msg.ChatID, Msg.MessageId)
+			report := model.Report{UserId: user.ID, Type: report_type, ActorId: CurrentUser.ID}
+			db.MysqlDB().Create(&report)
+			users, data, text := createUserListInline(Msg.GroupId)
+			if len(users) == 0 {
+				Bot.EditMessage("Semua Anggota sudah melakukan report", Msg.ChatID, Msg.MessageId)
+			} else {
+				markup := CreateInlineKeyboard(len(users), data, text, `{"controller": "/report-user-post", "data":"done"}`)
+				Bot.EditMessageWithMarkup(markup)
+			}
 		} else {
-			markup := CreateInlineKeyboard(len(users), data, text)
-			Bot.EditMessageWithMarkup(markup)
+			Bot.ReplyToUser("Nilai yang anda masukkan salah")
 		}
-	} else {
-		Bot.ReplyToUser("Nilai yang anda masukkan salah")
 	}
 }
 
@@ -98,7 +106,7 @@ func (c *Controller) DetailOfMe() {
 func (c *Controller) UpdateStateUserView() {
 	data := []string{`{"controller": "/update-user-state", "data":"active"}`, `{"controller": "/update-user-state", "data":"cuti"}`}
 	text := []string{"active", "cuti"}
-	markup := CreateInlineKeyboard(2, data, text)
+	markup := CreateInlineKeyboard(2, data, text, "")
 	Bot.SendWithMarkup(markup, "Update Status Anda")
 }
 
@@ -120,7 +128,7 @@ func (c *Controller) TodayReportView() {
 	if len(users) == 0 {
 		Bot.SendToGroup(Msg.GroupId, "Semua anggota sudah melakukan report")
 	} else {
-		markup := CreateInlineKeyboard(len(users), data, text)
+		markup := CreateInlineKeyboard(len(users), data, text, `{"controller": "/report-user-post", "data":"done"}`)
 		fmt.Println(markup)
 		Bot.SendWithMarkup(markup, "Remove from list")
 	}
