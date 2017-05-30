@@ -15,7 +15,7 @@ import (
 
 func RunSchedule() {
 	gocron.Every(1).Day().At("20:00").Do(reminderUser)
-	gocron.Every(1).Day().At("00:01").Do(updateRemaining)
+	gocron.Every(1).Day().At("06:00").Do(updateRemaining)
 	<-gocron.Start()
 
 }
