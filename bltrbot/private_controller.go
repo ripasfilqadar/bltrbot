@@ -2,6 +2,7 @@ package main
 
 import (
   "fmt"
+  // "github.com/jinzhu/gorm"
   "github.com/ripasfilqadar/bltrbot/bltrbot/db"
   "github.com/ripasfilqadar/bltrbot/bltrbot/model"
 )

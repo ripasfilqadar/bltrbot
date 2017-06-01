@@ -15,20 +15,13 @@ type User struct {
 	State          string
 	ChatId         int64
 	GroupId        int64
-	Scope					string
+	Scope          string
 }
 
 func (u *User) SetTarget(target int) {
-	if &u.Target == nil {
-		u.RemainingToday = target
-	} else {
-		u.RemainingToday = target + u.RemainingToday - u.Target
-		if u.RemainingToday < 0 {
-			u.RemainingToday = 0
-		}
-	}
+	u.RemainingToday = target
 	u.Target = target
-	db.MysqlDB().Save(u)
+	db.MysqlDB().Model(u).Update(User{Target: target, RemainingToday: target})
 }
 
 func (u *User) IsAdmin() bool {

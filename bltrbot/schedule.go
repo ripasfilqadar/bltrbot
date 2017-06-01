@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/jasonlvhit/gocron"
+	"github.com/jinzhu/gorm"
 )
 
 func RunSchedule() {
@@ -36,10 +37,10 @@ func reminderUser() {
 			fmt.Println(username_users)
 			go Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)
 		}
-		if len(users) == 0{
+		if len(users) == 0 {
 			Bot.SendToGroup(group.GroupId, "Semua User sudah laporan")
-		}else{
-				Bot.SendToGroup(group.GroupId, template+username_users)
+		} else {
+			Bot.SendToGroup(group.GroupId, template+username_users)
 		}
 	}
 }
@@ -48,10 +49,10 @@ func updateRemaining() {
 	users := []model.User{}
 	db.MysqlDB().Find(&users)
 	iqob_date := time.Now().AddDate(0, 0, -1)
-	template := "Rekap " + DateFormat(iqob_date.Date()) + "\n"
 	groups := []model.Group{}
 	db.MysqlDB().Find(&groups)
 	for _, group := range groups {
+		template := "Rekap " + DateFormat(iqob_date.Date()) + "\n"
 		users := []model.User{}
 		db.MysqlDB().Where("group_id = ?", group.GroupId).Find(&users)
 		var username_users string
@@ -62,17 +63,15 @@ func updateRemaining() {
 				if user.State != "active" {
 					continue
 				}
-				group := model.Group{}
-				db.MysqlDB().Where("group_id = ?", user.GroupId).First(&group)
 				Bot.SendToUser("Karena kamu belum laporan di group "+group.Name+" , jangan lupa bayar iqob ya", user.ChatId)
 				iqob := model.Iqob{UserId: user.ID, State: "not_paid", IqobDate: iqob_date, PaidAt: iqob_date}
 				db.MysqlDB().Create(&iqob)
-				username_users += strconv.Itoa(idx+1) + " ). " + Emoji["not_confirm"] + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
 			}
-			db.MysqlDB().Model(&user).Update("remaining_today", user.Target)
+			username_users += strconv.Itoa(idx+1) + " ). " + StateEmoji(user) + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
 		}
 		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
-		template += createIqobList(users, nil, nil, "state = 'not_paid'")
+		// template += createIqobList(users, nil, nil, "state = 'not_paid'")
 		Bot.SendToGroup(group.GroupId, template)
 	}
+	db.MysqlDB().Model(model.User{}).UpdateColumn("remaining_today", gorm.Expr("target"))
 }

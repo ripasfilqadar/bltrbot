@@ -1,0 +1,52 @@
+[1mdiff --git a/bltrbot/schedule.go b/bltrbot/schedule.go[m
+[1mindex 79932c7..63e86d1 100644[m
+[1m--- a/bltrbot/schedule.go[m
+[1m+++ b/bltrbot/schedule.go[m
+[36m@@ -22,11 +22,11 @@[m [mfunc RunSchedule() {[m
+ [m
+ //Task[m
+ func reminderUser() {[m
+[31m-	template := "Yang belum laporan \n"[m
+ 	fmt.Println("Debug")[m
+ 	groups := []model.Group{}[m
+ 	db.MysqlDB().Find(&groups)[m
+ 	for _, group := range groups {[m
+[32m+[m		[32mtemplate := "Yang belum laporan \n"[m
+ 		users := []model.User{}[m
+ 		db.MysqlDB().Where("group_id = ? and remaining_today > 0 and state = ?", group.GroupId, "active").Find(&users)[m
+ 		var username_users string[m
+[36m@@ -36,10 +36,10 @@[m [mfunc reminderUser() {[m
+ 			fmt.Println(username_users)[m
+ 			go Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)[m
+ 		}[m
+[31m-		if len(users) == 0{[m
+[32m+[m		[32mif len(users) == 0 {[m
+ 			Bot.SendToGroup(group.GroupId, "Semua User sudah laporan")[m
+[31m-		}else{[m
+[31m-				Bot.SendToGroup(group.GroupId, template+username_users)[m
+[32m+[m		[32m} else {[m
+[32m+[m			[32mBot.SendToGroup(group.GroupId, template+username_users)[m
+ 		}[m
+ 	}[m
+ }[m
+[36m@@ -48,10 +48,10 @@[m [mfunc updateRemaining() {[m
+ 	users := []model.User{}[m
+ 	db.MysqlDB().Find(&users)[m
+ 	iqob_date := time.Now().AddDate(0, 0, -1)[m
+[31m-	template := "Rekap " + DateFormat(iqob_date.Date()) + "\n"[m
+ 	groups := []model.Group{}[m
+ 	db.MysqlDB().Find(&groups)[m
+ 	for _, group := range groups {[m
+[32m+[m		[32mtemplate := "Rekap " + DateFormat(iqob_date.Date()) + "\n"[m
+ 		users := []model.User{}[m
+ 		db.MysqlDB().Where("group_id = ?", group.GroupId).Find(&users)[m
+ 		var username_users string[m
+[36m@@ -62,8 +62,6 @@[m [mfunc updateRemaining() {[m
+ 				if user.State != "active" {[m
+ 					continue[m
+ 				}[m
+[31m-				group := model.Group{}[m
+[31m-				db.MysqlDB().Where("group_id = ?", user.GroupId).First(&group)[m
+ 				Bot.SendToUser("Karena kamu belum laporan di group "+group.Name+" , jangan lupa bayar iqob ya", user.ChatId)[m
+ 				iqob := model.Iqob{UserId: user.ID, State: "not_paid", IqobDate: iqob_date, PaidAt: iqob_date}[m
+ 				db.MysqlDB().Create(&iqob)[m
