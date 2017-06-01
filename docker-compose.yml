@@ -28,17 +28,6 @@ services:
     networks:
       - backend
 
-  mongo:
-    build: ./mongo
-    ports:
-      - "8020:${MONGO_DATABASE_PORT}"
-    volumes:
-      - ./mongo:/data/db
-    depends_on:
-      - mysql
-      - app
-    networks:
-      - backend
 
 networks:
   backend:

@@ -109,7 +109,6 @@ func StartTelegram() {
 		}
 
 		Msg.UserName = CurrentUser.UserName
-		db.MongoDB("message").Insert(Msg)
 		findFunc()
 		SetNilAllVar()
 	}
