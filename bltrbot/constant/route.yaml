@@ -72,6 +72,15 @@ command:
   len_args: 2
   scope: admin
   description: Set A User be Admin
+ /add_iqob:
+  function: AddIqob
+  len_args: 3
+  scope: admin
+  description: Add Iqob Manually By Admin
+ /remove_iqob:
+  function: RemoveIqob
+  len_args: 3
+  description: Remove Iqob From User
 #############callback###############################
  /update-user-state:
   function: UpdateStateUser

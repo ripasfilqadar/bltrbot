@@ -11,7 +11,15 @@ import (
 )
 
 func (c *Controller) ListToday() {
-	template := "List Tilawah " + DateFormat(time.Now().Date()) + "\n"
+	var t time.Time
+
+	if time.Now().Hour() < 6 {
+		t = time.Now().AddDate(0, 0, -1)
+	} else {
+		t = time.Now()
+	}
+	template := "List Tilawah " + DateFormat(t.Date()) + "\n"
+
 	users := []model.User{}
 	db.MysqlDB().Where("group_id = ?", Msg.GroupId).Find(&users)
 	template += ListMemberToday(users)
@@ -60,6 +68,7 @@ func (c *Controller) ListAllIqob() {
 
 	users := []model.User{}
 	db.MysqlDB().Where("group_id = ?", Msg.GroupId).Find(&users)
+	fmt.Println(Msg.GroupId)
 	iqob_list := createIqobList(users, pt_t_max, pt_t_min, "")
 	if iqob_list == "" {
 		Bot.SendToGroup(Msg.GroupId, "Tidak ada iqob yang belum dibayar")
