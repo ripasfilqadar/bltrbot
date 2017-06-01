@@ -5,6 +5,5 @@ mongo/
 .env
 bltrbot/bltrbot
 bltrbot/bltr_bot
-notif.rb
-notif.sh
-notif.log
+notif.*
+backup/
