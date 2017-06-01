@@ -119,6 +119,7 @@ func createIqobList(users []model.User, t_min *time.Time, t_max *time.Time, opt 
 						templateUser = Emoji["iqob"] + " " + user.FullName
 					}
 				}
+				templateUser += " " + strconv.Itoa(iqob.IqobDate.Day())
 				if iqob.State == "paid" {
 					templateUser += "(v) "
 				} else {
