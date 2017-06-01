@@ -106,7 +106,9 @@ func createIqobList(users []model.User, t_min *time.Time, t_max *time.Time, opt 
 			key_month = first_month.Month().String()
 			fmt.Println(iqobs)
 			fmt.Println(key_month)
-			list_iqob[key_month] = first_month.Month().String() + " " + strconv.Itoa(first_month.Year()) + "\n"
+			if list_iqob[key_month] == "" {
+				list_iqob[key_month] = first_month.Month().String() + " " + strconv.Itoa(first_month.Year()) + "\n"
+			}
 			for _, iqob := range iqobs {
 				if iqob.IqobDate.Month().String() != key_month {
 					list_iqob[key_month] += templateUser
@@ -117,20 +119,22 @@ func createIqobList(users []model.User, t_min *time.Time, t_max *time.Time, opt 
 						templateUser = Emoji["iqob"] + " " + user.FullName
 					}
 				}
-				templateUser += " " + strconv.Itoa(iqob.IqobDate.Day())
 				if iqob.State == "paid" {
 					templateUser += "(v) "
 				} else {
 					templateUser += "(x) "
 				}
 			}
-			list_iqob[key_month] += templateUser
+			list_iqob[key_month] += templateUser + "\n"
+			fmt.Println("list_iqob")
+			fmt.Println(list_iqob)
+			fmt.Println("list_iqob")
 		}
 		fmt.Println("template")
-		for _, value := range list_iqob {
-			template += "\n" + value + " \n"
-			fmt.Println(template)
-		}
+	}
+	for _, value := range list_iqob {
+		template += "\n" + value + " \n"
+		fmt.Println(template)
 	}
 	return template
 }
