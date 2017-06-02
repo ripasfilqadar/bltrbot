@@ -46,8 +46,6 @@ func reminderUser() {
 }
 
 func updateRemaining() {
-	users := []model.User{}
-	db.MysqlDB().Find(&users)
 	iqob_date := time.Now().AddDate(0, 0, -1)
 	groups := []model.Group{}
 	db.MysqlDB().Find(&groups)
@@ -67,11 +65,11 @@ func updateRemaining() {
 				iqob := model.Iqob{UserId: user.ID, State: "not_paid", IqobDate: iqob_date, PaidAt: iqob_date}
 				db.MysqlDB().Create(&iqob)
 			}
-			username_users += strconv.Itoa(idx+1) + " ). " + StateEmoji(user) + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
+			//username_users += strconv.Itoa(idx+1) + " ). " + StateEmoji(user) + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
 		}
-		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
+		//template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
 		// template += createIqobList(users, nil, nil, "state = 'not_paid'")
 		Bot.SendToGroup(group.GroupId, template)
+		db.MysqlDB().Model(&users).UpdateColumn("remaining_today", gorm.Expr("target"))
 	}
-	db.MysqlDB().Model(model.User{}).UpdateColumn("remaining_today", gorm.Expr("target"))
 }
