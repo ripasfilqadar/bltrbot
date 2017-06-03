@@ -81,7 +81,7 @@ func ListMemberToday(users []model.User) string {
 	fmt.Println("!")
 	template := ""
 	for index, member := range users {
-		template += strconv.Itoa(index+1) + "). " + StateEmoji(member) + " " + member.FullName + " (" + strconv.Itoa(member.Target-member.RemainingToday) + "/" + strconv.Itoa(member.Target) + ")\n"
+		template += strconv.Itoa(index+1) + "). " + StateEmoji(member) + " " + member.FullName + " (" + strconv.Itoa(member.Target) + ")\n"
 	}
 	return template
 }

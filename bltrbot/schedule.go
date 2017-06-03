@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/jasonlvhit/gocron"
-	"github.com/jinzhu/gorm"
 )
 
 func RunSchedule() {
@@ -29,11 +28,11 @@ func reminderUser() {
 	db.MysqlDB().Find(&groups)
 	for _, group := range groups {
 		users := []model.User{}
-		db.MysqlDB().Where("group_id = ? and remaining_today > 0 and state = ?", group.GroupId, "active").Find(&users)
+		db.MysqlDB().Where("group_id = ? and report_today = ? and state = ?", group.GroupId, false, "active").Find(&users)
 		var username_users string
 		for idx, user := range users {
 			fmt.Println(user)
-			username_users += strconv.Itoa(idx+1) + ") " + Emoji["not_confirm"] + user.FullName + "(@" + user.UserName + ") (" + strconv.Itoa(user.RemainingToday) + ")\n"
+			username_users += strconv.Itoa(idx+1) + ") " + Emoji["not_confirm"] + user.FullName + "(@" + user.UserName + ") (" + strconv.Itoa(user.Target) + ")\n"
 			fmt.Println(username_users)
 			go Bot.SendToUser("Jangan lupa laporan di group "+group.Name, user.ChatId)
 		}
@@ -57,7 +56,7 @@ func updateRemaining() {
 		template += ListMemberToday(users)
 		for idx, user := range users {
 			fmt.Println(user)
-			if user.RemainingToday > 0 {
+			if !user.ReportToday {
 				if user.State != "active" {
 					continue
 				}
@@ -70,6 +69,6 @@ func updateRemaining() {
 		//template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
 		// template += createIqobList(users, nil, nil, "state = 'not_paid'")
 		Bot.SendToGroup(group.GroupId, template)
-		db.MysqlDB().Model(&users).UpdateColumn("remaining_today", gorm.Expr("target"))
+		db.MysqlDB().Model(&users).UpdateColumn("report_today",false)
 	}
 }

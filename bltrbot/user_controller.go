@@ -35,11 +35,8 @@ func (c *Controller) TodayReport() {
 			report_type := "tilawah"
 			user := model.User{}
 			db.MysqlDB().First(&user, user_id)
-			remaining_today := 0
-			if remaining_today < 0 {
-				remaining_today = 0
-			}
-			db.MysqlDB().Model(&user).Update("remaining_today", remaining_today)
+
+			db.MysqlDB().Model(&user).Update("report_today", true)
 
 			report := model.Report{UserId: user.ID, Type: report_type, ActorId: CurrentUser.ID}
 			db.MysqlDB().Create(&report)
@@ -136,7 +133,7 @@ func (c *Controller) TodayReportView() {
 
 func createUserListInline(group_id int64) ([]model.User, []string, []string) {
 	users := []model.User{}
-	db.MysqlDB().Where("group_id = ? and state = ? and remaining_today > 0", group_id, "active").Find(&users)
+	db.MysqlDB().Where("group_id = ? and state = ? and report_today = ?", group_id, "active", false).Find(&users)
 	var data, text []string
 	for _, user := range users {
 		data = append(data, `{"controller": "/report-user-post", "data":"`+strconv.Itoa(int(user.ID))+`"}`)

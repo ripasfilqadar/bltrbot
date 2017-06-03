@@ -16,12 +16,11 @@ type User struct {
 	ChatId         int64
 	GroupId        int64
 	Scope          string
+	ReportToday		 bool
 }
 
 func (u *User) SetTarget(target int) {
-	u.RemainingToday = target
-	u.Target = target
-	db.MysqlDB().Model(u).Update(User{Target: target, RemainingToday: target})
+	db.MysqlDB().Model(u).Update(User{Target: target, ReportToday: false})
 }
 
 func (u *User) IsAdmin() bool {

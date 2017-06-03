@@ -11,9 +11,9 @@ import (
 func StateEmoji(u model.User) (emoji string) {
 	if u.State == "cuti" {
 		emoji = Emoji["leave"]
-	} else if u.RemainingToday > 0 {
+	} else if u.ReportToday == false {
 		emoji = Emoji["not_confirm"]
-	} else if u.RemainingToday == 0 {
+	} else if u.ReportToday {
 		emoji = Emoji["smile"]
 	}
 	return emoji
