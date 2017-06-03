@@ -8,14 +8,23 @@ import (
 
 type User struct {
 	gorm.Model
-	UserName       string `json:"username" bson:"username"`
-	FullName       string `json:"full_name" bson:"full_name"`
-	Target         int    `json:"target" bson:"target"`
-	State          string
-	ChatId         int64
-	GroupId        int64
-	Scope          string
-	ReportToday		 bool
+	UserName    string `json:"username" bson:"username"`
+	FullName    string `json:"full_name" bson:"full_name"`
+	Target      int    `json:"target" bson:"target"`
+	State       string
+	ChatId      int64
+	GroupId     int64
+	Scope       string
+	ReportToday bool
+}
+
+type PrivateUser struct {
+	gorm.Model
+	UserName string
+	FullName string
+	ChatId   int64
+	Features []Feature `gorm:"many2many:user_features;"`
+	State    string
 }
 
 func (u *User) SetTarget(target int) {

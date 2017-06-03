@@ -11,6 +11,11 @@ import (
 	"time"
 
 	"github.com/jasonlvhit/gocron"
+
+	"net/http"
+	"encoding/json"
+	"io/ioutil"
+
 )
 
 func RunSchedule() {
@@ -18,6 +23,30 @@ func RunSchedule() {
 	gocron.Every(1).Day().At("06:00").Do(updateRemaining)
 	<-gocron.Start()
 
+}
+
+func getPrayerTime() {
+	scraping_result := model.ScrapingResult{}
+	resp, err := http.Get("https://time.siswadi.com/pray/Jakarta")
+	if err != nil {
+	fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(body, &scraping_result)
+	timeNamePrayer := []string{"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"}
+	for _, name := range timeNamePrayer{
+		prayerTime := model.PrayerTime{}
+		db.MysqlDB().Where("name = ?", name).First(&prayerTime)
+		if prayerTime == (model.PrayerTime{}){
+			prayerTime = model.PrayerTime{Name: name, Time: scraping_result.Data[name]}
+			db.MysqlDB().Create(&prayerTime)
+		}else{
+			db.MysqlDB().Model(&prayerTime).Update("time", scraping_result.Data[name])
+		}
+	}
+	fmt.Println(scraping_result.Data)
+	fmt.Println(scraping_result.Data["Sunset"])
 }
 
 //Task

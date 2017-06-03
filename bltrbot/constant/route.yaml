@@ -94,3 +94,9 @@ command:
   function: Testing2
   len_args: 1
   scope: callback
+#############Private###############################
+ /list_features:
+  function: ListFeatureFeature
+  len_args: 1
+  scope: private
+

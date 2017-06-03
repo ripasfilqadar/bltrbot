@@ -41,3 +41,23 @@ func InitRoute() {
 		panic(err)
 	}
 }
+
+func (c *Command) IsPrivate() bool {
+	return c.Scope == "private"
+}
+
+func (c *Command) isAdmin() bool {
+	return c.Scope == "admin"
+}
+
+func (c *Command) IsGroup() bool {
+	return c.Scope == "group"
+}
+
+func (c *Command) IsUser() bool {
+	return c.Scope == "user"
+}
+
+func (c *Command) IsSuperAdmin() bool {
+	return c.Scope == "superadmin"
+}
