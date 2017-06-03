@@ -11,7 +11,6 @@ type User struct {
 	UserName       string `json:"username" bson:"username"`
 	FullName       string `json:"full_name" bson:"full_name"`
 	Target         int    `json:"target" bson:"target"`
-	RemainingToday int
 	State          string
 	ChatId         int64
 	GroupId        int64

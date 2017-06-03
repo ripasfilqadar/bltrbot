@@ -56,7 +56,8 @@ func updateRemaining() {
 		template += ListMemberToday(users)
 		for idx, user := range users {
 			fmt.Println(user)
-			if !user.ReportToday {
+			if !user.ReportToday{
+				fmt.Println("active bro")
 				if user.State != "active" {
 					continue
 				}
@@ -67,8 +68,8 @@ func updateRemaining() {
 			}
 					}
 		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
-		// template += createIqobList(users, nil, nil, "state = 'not_paid'")
+
 		Bot.SendToGroup(group.GroupId, template)
-		db.MysqlDB().Model(&users).UpdateColumn("report_today",false)
+		db.MysqlDB().Model(&users).UpdateColumn("report_today", false)
 	}
 }
