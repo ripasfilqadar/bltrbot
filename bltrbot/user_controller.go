@@ -23,12 +23,12 @@ func (c *Controller) SetTarget() {
 func (c *Controller) TodayReport() {
 	fmt.Println("today report")
 	fmt.Println(Args[1])
-	if Args[1] == "done"{
+	if Args[1] == "done" {
 		users := []model.User{}
 		db.MysqlDB().Where("group_id = ?", Msg.GroupId).Find(&users)
 		template := ListMemberToday(users)
-		Bot.EditMessage(template, Msg.ChatID, Msg.MessageId)
-	}else{
+		Bot.EditMessage(template)
+	} else {
 		user_id, err := strconv.Atoi(Args[1])
 		fmt.Println(user_id)
 		if err == nil && user_id > 0 {
@@ -42,7 +42,7 @@ func (c *Controller) TodayReport() {
 			db.MysqlDB().Create(&report)
 			users, data, text := createUserListInline(Msg.GroupId)
 			if len(users) == 0 {
-				Bot.EditMessage("Semua Anggota sudah melakukan report", Msg.ChatID, Msg.MessageId)
+				Bot.EditMessage("Semua Anggota sudah melakukan report")
 			} else {
 				markup := CreateInlineKeyboard(len(users), data, text, `{"controller": "/report-user-post", "data":"done"}`)
 				Bot.EditMessageWithMarkup(markup)
@@ -113,7 +113,7 @@ func (c *Controller) UpdateStateUser() {
 	fmt.Println(CurrentUser)
 	if state == "cuti" || state == "active" {
 		db.MysqlDB().Model(&CurrentUser).Update("state", state)
-		Bot.EditMessage("Status berhasil diupdate", Msg.ChatID, Msg.MessageId)
+		Bot.EditMessage("Status berhasil diupdate")
 	} else {
 		Bot.ReplyToUser("Status tidak valid, pilihan status (cuti/active)")
 	}

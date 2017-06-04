@@ -29,6 +29,7 @@ type Telegram struct {
 
 var Bot Telegram
 var CurrentUser model.User
+var PrivateCurrentUser *model.PrivateUser
 var Msg model.Message
 var MsgBot tgbotapi.MessageConfig
 var CurrentRoute Command
@@ -79,11 +80,13 @@ func StartTelegram() {
 		}
 		var updateMsg *tgbotapi.Message
 		if update.CallbackQuery != nil {
-			if update.CallbackQuery.Data == "finished" {
-				Bot.EditMessage("Action Finished", update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID)
+			Msg = createMsgWithCallback(update.CallbackQuery)
+			fmt.Println(Msg.Message == "finished")
+			fmt.Println(strings.Join(strings.Fields(Msg.Message), ""))
+			if strings.Join(strings.Fields(Msg.Message), "") == "finished" {
+				Bot.EditMessage("Action Finished")
 				continue
 			}
-			Msg = createMsgWithCallback(update.CallbackQuery)
 			updateMsg = update.CallbackQuery.Message
 			updateMsg.From = update.CallbackQuery.From
 			fmt.Println(update.CallbackQuery.Data)
@@ -91,12 +94,11 @@ func StartTelegram() {
 			Msg = createMsg(update.Message)
 			updateMsg = update.Message
 		}
-
-		fmt.Println("123")
-
-		fmt.Println(updateMsg)
-		fmt.Println("123")
 		CurrentRoute = Routes.Command[Msg.Command()]
+		if Msg.IsPrivate() && (!CurrentRoute.IsPrivate() || CurrentRoute.IsAdmin()) {
+			Bot.SendToUser("Perintah tidak tersedia", Msg.ChatId)
+			continue
+		}
 
 		currentUser(updateMsg)
 
@@ -117,13 +119,13 @@ func StartTelegram() {
 func (t *Telegram) ReplyToUser(msg string) {
 	fmt.Println("Send to user")
 	fmt.Println(Msg)
-	MsgBot = tgbotapi.NewMessage(Msg.ChatID, msg)
+	MsgBot = tgbotapi.NewMessage(Msg.ChatId, msg)
 	MsgBot.ReplyToMessageID = Msg.MessageId
 	Bot.Bot.Send(MsgBot)
 }
 
-func (t *Telegram) EditMessage(msg string, chat_id int64, msg_id int) {
-	msgBot := tgbotapi.NewEditMessageText(chat_id, msg_id, msg)
+func (t *Telegram) EditMessage(msg string) {
+	msgBot := tgbotapi.NewEditMessageText(Msg.ChatId, Msg.MessageId, msg)
 	Bot.Bot.Send(msgBot)
 }
 
@@ -137,14 +139,14 @@ func (t *Telegram) SendToUser(msg string, chat_id int64) {
 	Bot.Bot.Send(MsgBot)
 }
 func (t *Telegram) SendWithMarkup(markup tgbotapi.InlineKeyboardMarkup, msgText string) {
-	msg := tgbotapi.NewMessage(Msg.ChatID, msgText)
+	msg := tgbotapi.NewMessage(Msg.ChatId, msgText)
 	msg.ReplyMarkup = markup
 	Bot.Bot.Send(msg)
 }
 
 func (t *Telegram) EditMessageWithMarkup(replyMarkup tgbotapi.InlineKeyboardMarkup) {
 	fmt.Println("EditMessageWithMarkup")
-	msgBot := tgbotapi.NewEditMessageReplyMarkup(Msg.ChatID, Msg.MessageId, replyMarkup)
+	msgBot := tgbotapi.NewEditMessageReplyMarkup(Msg.ChatId, Msg.MessageId, replyMarkup)
 	Bot.Bot.Send(msgBot)
 }
 
@@ -156,12 +158,14 @@ func createMsgWithCallback(update *tgbotapi.CallbackQuery) model.Message {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		if update.Message.Chat.Type == "private" {
-			group_id = 0
-		} else {
-			group_id = update.Message.Chat.ID
+		msg = model.Message{
+			Message:   CallbackMsg.Controller + " " + CallbackMsg.Data,
+			MessageId: update.Message.MessageID,
+			Date:      update.Message.Date,
+			ChatId:    update.Message.Chat.ID,
+			Type:      update.Message.Chat.Type,
+			GroupId:   group_id,
 		}
-		msg = model.Message{Message: CallbackMsg.Controller + " " + CallbackMsg.Data, MessageId: update.Message.MessageID, Date: update.Message.Date, ChatID: update.Message.Chat.ID, Type: update.Message.Chat.Type, GroupId: group_id}
 	}
 	Args = strings.Fields(msg.Message)
 	return msg
@@ -169,43 +173,63 @@ func createMsgWithCallback(update *tgbotapi.CallbackQuery) model.Message {
 
 func createMsg(message *tgbotapi.Message) model.Message {
 	var group_id int64
-	if message.Chat.Type == "private" {
-		group_id = 0
-	} else {
-		group_id = message.Chat.ID
+	msg := model.Message{
+		Message:   message.Text,
+		MessageId: message.MessageID,
+		Date:      message.Date,
+		ChatId:    message.Chat.ID,
+		Type:      message.Chat.Type,
+		GroupId:   group_id,
+		FullName:  message.From.FirstName + " " + message.From.LastName,
 	}
-	msg := model.Message{Message: message.Text, MessageId: message.MessageID, Date: message.Date, ChatID: message.Chat.ID, Type: message.Chat.Type, GroupId: group_id}
 	Args = strings.Fields(msg.Message)
 	return msg
 
 }
 
 func currentUser(msg *tgbotapi.Message) {
-	if CurrentUser == (model.User{}) {
-		fmt.Println("current user")
-		fmt.Println(msg.Chat.ID)
-		fmt.Println(msg.Chat.UserName)
-		fmt.Println(msg.Chat.Type)
-		if msg.Chat.Type == "private" {
-			db.MysqlDB().Where("user_name = ?", msg.From.UserName).First(&CurrentUser)
-		} else {
-			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, msg.Chat.ID).First(&CurrentUser)
+	if CurrentRoute.IsPrivate() {
+		if PrivateCurrentUser == nil {
+			db.MysqlDB().Where("user_name = ?", msg.From.UserName).First(PrivateCurrentUser)
+			if PrivateCurrentUser == nil {
+				PrivateCurrentUser = &model.PrivateUser{
+					UserName: msg.From.UserName,
+					FullName: msg.From.FirstName + " " + msg.From.LastName,
+					State:    "active",
+					ChatId:   int64(Msg.ChatId),
+				}
+				db.MysqlDB().Create(PrivateCurrentUser)
+			}
 		}
-		if CurrentUser == (model.User{}) {
-			if CurrentRoute.Scope == "user" || CurrentRoute.Scope == "group" {
-				CurrentUser = model.User{UserName: msg.From.UserName, FullName: msg.From.FirstName + " " + msg.From.LastName, State: "active", ChatId: int64(msg.From.ID), GroupId: Msg.GroupId, Scope: "user"}
-				db.MysqlDB().Create(&CurrentUser)
+	} else {
+		if CurrentUser == (model.User{}) && Msg.IsGroup() {
+			db.MysqlDB().Where("user_name = ? AND group_id = ?", Msg.UserName, Msg.ChatId).First(&CurrentUser)
+			if CurrentUser == (model.User{}) {
+				if CurrentRoute.IsUser() || CurrentRoute.IsGroup() {
+					CurrentUser = model.User{
+						UserName: Msg.UserName,
+						FullName: msg.From.FirstName + " " + msg.From.LastName,
+						State:    "active",
+						ChatId:   int64(Msg.ChatId),
+						GroupId:  Msg.GroupId,
+						Scope:    "user",
+					}
+					db.MysqlDB().Create(&CurrentUser)
+				}
 			}
 		}
 	}
 }
 
-func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" && CurrentUser.IsNormallyUser() && CurrentRoute.Scope == "admin" {
+func onlyForGroup() bool {
+	if Msg.IsPrivate() && CurrentRoute.IsPrivate() {
+		return true
+	}
+	if Msg.IsPrivate() && CurrentUser.IsNormallyUser() && CurrentRoute.IsAdmin() {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
 		return false
 	}
-	if CurrentUser.IsNormallyUser() && CurrentRoute.Scope == "admin" {
+	if CurrentUser.IsNormallyUser() && CurrentRoute.IsAdmin() {
 		Bot.ReplyToUser("Perintah yang anda masukkan salah")
 		return false
 	}
@@ -222,7 +246,7 @@ func findCommand(msg string) string {
 }
 
 func isError(msg *tgbotapi.Message) bool {
-	if !onlyForGroup(msg) {
+	if !onlyForGroup() {
 		return true
 	}
 	if msg.ReplyToMessage != nil {
@@ -262,8 +286,6 @@ func checkRouteAndCommand() bool {
 	len_args, _ := strconv.Atoi(CurrentRoute.LenArgs)
 
 	if len_args > len(Args) {
-		fmt.Println(CurrentRoute.Function)
-		fmt.Println(len(Args))
 		Bot.ReplyToUser("Perintah anda tidak sesuai")
 		return false
 	}
@@ -291,10 +313,8 @@ func CreateInlineKeyboard(count int, data []string, text []string, lastData stri
 		buttonrows[idx/2] = row
 	}
 	if lastData == "" {
-		lastData = "finished"
+		lastData = `{"data": "finished"}`
 	}
-	fmt.Println("lastData")
-	fmt.Println(lastData)
 	button := tgbotapi.NewInlineKeyboardButtonData("Done", lastData)
 	buttonrows[count] = tgbotapi.NewInlineKeyboardRow(button)
 	fmt.Println(buttonrows)
