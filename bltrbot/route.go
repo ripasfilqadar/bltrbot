@@ -19,6 +19,7 @@ type Command struct {
 	LenArgs     string `yaml:"len_args"`
 	Description string `yaml:"description"`
 	Scope       string `yaml:scope`
+	Type        string
 }
 
 type CallbackMessage struct {
@@ -46,7 +47,7 @@ func (c *Command) IsPrivate() bool {
 	return c.Scope == "private"
 }
 
-func (c *Command) isAdmin() bool {
+func (c *Command) IsAdmin() bool {
 	return c.Scope == "admin"
 }
 
@@ -60,4 +61,8 @@ func (c *Command) IsUser() bool {
 
 func (c *Command) IsSuperAdmin() bool {
 	return c.Scope == "superadmin"
+}
+
+func (c *Command) IsCallBack() bool {
+	return c.Type == "callback"
 }

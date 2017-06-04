@@ -23,8 +23,8 @@ type PrivateUser struct {
 	UserName string
 	FullName string
 	ChatId   int64
-	Features []Feature `gorm:"many2many:user_features;"`
-	State    string
+	// Features []Feature `gorm:"many2many:user_features;"`
+	State string
 }
 
 func (u *User) SetTarget(target int) {

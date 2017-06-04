@@ -12,36 +12,44 @@ import (
 
 	"github.com/jasonlvhit/gocron"
 
-	"net/http"
 	"encoding/json"
 	"io/ioutil"
-
+	"net/http"
 )
 
 func RunSchedule() {
 	gocron.Every(1).Day().At("20:00").Do(reminderUser)
 	gocron.Every(1).Day().At("06:00").Do(updateRemaining)
+	Cities := []model.City{}
+	db.MysqlDB().Find(&Cities)
+	for _, city := range Cities {
+		gocron.Every(1).Day().At("01:00").Do(getPrayerTime, city.Name)
+	}
 	<-gocron.Start()
 
 }
 
-func getPrayerTime() {
+func getPrayerTime(cityName string) {
 	scraping_result := model.ScrapingResult{}
-	resp, err := http.Get("https://time.siswadi.com/pray/Jakarta")
+	resp, err := http.Get("https://time.siswadi.com/pray/" + cityName)
 	if err != nil {
-	fmt.Println(err)
+		fmt.Println(err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	json.Unmarshal(body, &scraping_result)
 	timeNamePrayer := []string{"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"}
-	for _, name := range timeNamePrayer{
+	for _, name := range timeNamePrayer {
 		prayerTime := model.PrayerTime{}
-		db.MysqlDB().Where("name = ?", name).First(&prayerTime)
-		if prayerTime == (model.PrayerTime{}){
-			prayerTime = model.PrayerTime{Name: name, Time: scraping_result.Data[name]}
+		db.MysqlDB().Where("name = ? and city_name = ? ", name, cityName).First(&prayerTime)
+		if prayerTime == (model.PrayerTime{}) {
+			prayerTime = model.PrayerTime{
+				Name:     name,
+				Time:     scraping_result.Data[name],
+				CityName: cityName,
+			}
 			db.MysqlDB().Create(&prayerTime)
-		}else{
+		} else {
 			db.MysqlDB().Model(&prayerTime).Update("time", scraping_result.Data[name])
 		}
 	}
@@ -85,17 +93,22 @@ func updateRemaining() {
 		template += ListMemberToday(users)
 		for idx, user := range users {
 			fmt.Println(user)
-			if !user.ReportToday{
+			if !user.ReportToday {
 				fmt.Println("active bro")
 				if user.State != "active" {
 					continue
 				}
 				Bot.SendToUser("Karena kamu belum laporan di group "+group.Name+" , jangan lupa bayar iqob ya", user.ChatId)
-				iqob := model.Iqob{UserId: user.ID, State: "not_paid", IqobDate: iqob_date, PaidAt: iqob_date}
+				iqob := model.Iqob{
+					UserId:   user.ID,
+					State:    "not_paid",
+					IqobDate: iqob_date,
+					PaidAt:   iqob_date,
+				}
 				db.MysqlDB().Create(&iqob)
 				username_users += strconv.Itoa(idx+1) + " ). " + StateEmoji(user) + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
 			}
-					}
+		}
 		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
 
 		Bot.SendToGroup(group.GroupId, template)

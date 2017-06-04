@@ -80,11 +80,13 @@ func StartTelegram() {
 		}
 		var updateMsg *tgbotapi.Message
 		if update.CallbackQuery != nil {
-			if update.CallbackQuery.Data == "finished" {
-				Bot.EditMessage("Action Finished", update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID)
+			Msg = createMsgWithCallback(update.CallbackQuery)
+			fmt.Println(Msg.Message == "finished")
+			fmt.Println(strings.Join(strings.Fields(Msg.Message), ""))
+			if strings.Join(strings.Fields(Msg.Message), "") == "finished" {
+				Bot.EditMessage("Action Finished")
 				continue
 			}
-			Msg = createMsgWithCallback(update.CallbackQuery)
 			updateMsg = update.CallbackQuery.Message
 			updateMsg.From = update.CallbackQuery.From
 			fmt.Println(update.CallbackQuery.Data)
@@ -93,7 +95,7 @@ func StartTelegram() {
 			updateMsg = update.Message
 		}
 		CurrentRoute = Routes.Command[Msg.Command()]
-		if Msg.IsPrivate() && (!CurrentRoute.IsPrivate() || CurrentRoute.IsSuperAdmin()) {
+		if Msg.IsPrivate() && (!CurrentRoute.IsPrivate() || CurrentRoute.IsAdmin()) {
 			Bot.SendToUser("Perintah tidak tersedia", Msg.ChatId)
 			continue
 		}
@@ -122,8 +124,8 @@ func (t *Telegram) ReplyToUser(msg string) {
 	Bot.Bot.Send(MsgBot)
 }
 
-func (t *Telegram) EditMessage(msg string, chat_id int64, msg_id int) {
-	msgBot := tgbotapi.NewEditMessageText(chat_id, msg_id, msg)
+func (t *Telegram) EditMessage(msg string) {
+	msgBot := tgbotapi.NewEditMessageText(Msg.ChatId, Msg.MessageId, msg)
 	Bot.Bot.Send(msgBot)
 }
 
@@ -188,10 +190,10 @@ func createMsg(message *tgbotapi.Message) model.Message {
 func currentUser(msg *tgbotapi.Message) {
 	if CurrentRoute.IsPrivate() {
 		if PrivateCurrentUser == nil {
-			db.MysqlDB().Where("user_name = ?", Msg.UserName).First(PrivateCurrentUser)
+			db.MysqlDB().Where("user_name = ?", msg.From.UserName).First(PrivateCurrentUser)
 			if PrivateCurrentUser == nil {
 				PrivateCurrentUser = &model.PrivateUser{
-					UserName: Msg.UserName,
+					UserName: msg.From.UserName,
 					FullName: msg.From.FirstName + " " + msg.From.LastName,
 					State:    "active",
 					ChatId:   int64(Msg.ChatId),
@@ -223,11 +225,11 @@ func onlyForGroup() bool {
 	if Msg.IsPrivate() && CurrentRoute.IsPrivate() {
 		return true
 	}
-	if Msg.IsPrivate() && CurrentUser.IsNormallyUser() && CurrentRoute.isAdmin() {
+	if Msg.IsPrivate() && CurrentUser.IsNormallyUser() && CurrentRoute.IsAdmin() {
 		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
 		return false
 	}
-	if CurrentUser.IsNormallyUser() && CurrentRoute.isAdmin() {
+	if CurrentUser.IsNormallyUser() && CurrentRoute.IsAdmin() {
 		Bot.ReplyToUser("Perintah yang anda masukkan salah")
 		return false
 	}
@@ -311,7 +313,7 @@ func CreateInlineKeyboard(count int, data []string, text []string, lastData stri
 		buttonrows[idx/2] = row
 	}
 	if lastData == "" {
-		lastData = "finished"
+		lastData = `{"data": "finished"}`
 	}
 	button := tgbotapi.NewInlineKeyboardButtonData("Done", lastData)
 	buttonrows[count] = tgbotapi.NewInlineKeyboardRow(button)

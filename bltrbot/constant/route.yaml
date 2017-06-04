@@ -99,4 +99,25 @@ command:
   function: ListFeatureFeature
   len_args: 1
   scope: private
+ /state_feature_view:
+  function: FeatureStateView
+  len_args: 2
+  scope: private
+  type: callback
+ /state_feature_update:
+  function: FeatureStateUpdate
+  len_args: 2
+  scope: private
+  type: callback
+ /city_add_city:
+  len_args: 2
+  function: CityAddCity
+  type: callback
+  scope: private
+ /city_notif_update:
+  len_args: 1
+  function: CityShowCity
+  type: callback
+  scope: private
+
 
