@@ -27,7 +27,6 @@ func (c *Controller) ListToday() {
 }
 
 func (c *Controller) ListIqob() {
-	panic("something wrong babes")
 	var month int
 	var t_min, t_max time.Time
 	var pt_t_min, pt_t_max *time.Time
