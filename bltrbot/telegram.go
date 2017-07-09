@@ -15,6 +15,7 @@ import (
 	"strconv"
 
 	"net/http"
+	"net/url"
 
 	"os"
 
@@ -109,6 +110,7 @@ func StartTelegram() {
 		}
 
 		Msg.UserName = CurrentUser.UserName
+
 		findFunc()
 		SetNilAllVar()
 	}
@@ -213,6 +215,12 @@ func onlyForGroup(msg *tgbotapi.Message) bool {
 }
 
 func findFunc() {
+	defer func() {
+		if r := recover(); r != nil {
+			ErrorHandling(r.(string))
+		}
+	}()
+
 	fmt.Println(CurrentRoute.Function)
 	reflect.ValueOf(&AppController).MethodByName(CurrentRoute.Function).Call([]reflect.Value{})
 }
@@ -305,4 +313,23 @@ func CreateInlineKeyboard(count int, data []string, text []string, lastData stri
 func CreateMsgConfig() tgbotapi.MessageConfig {
 	msg := tgbotapi.NewMessage(CurrentUser.ChatId, "Update Status Anda")
 	return msg
+}
+
+func ErrorHandling(errorMsg string) {
+	f, _ := os.OpenFile("log.txt", os.O_RDWR|os.O_APPEND, 0660)
+	f.WriteString(errorMsg)
+	sendLog(errorMsg)
+	Bot.ReplyToUser("something went wrong, It will be fixed soon")
+}
+
+func sendLog(errorMsg string) {
+	hc := http.Client{}
+
+	form := url.Values{}
+	form.Add("chat_id", os.Getenv("BIG_BOSS_CHAT_ID") + "sendMessage")
+	form.Add("text", errorMsg)
+	req, _ := http.NewRequest("POST", os.Getenv("BIG_BOSS_CHAT_URL") + "sendMessage", strings.NewReader(form.Encode()))
+	// req.PostForm = form
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	hc.Do(req)
 }
