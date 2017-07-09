@@ -217,7 +217,7 @@ func onlyForGroup(msg *tgbotapi.Message) bool {
 func findFunc() {
 	defer func() {
 		if r := recover(); r != nil {
-			ErrorHandling(r.(string))
+			ErrorHandling(r.(string)+"\n")
 		}
 	}()
 
