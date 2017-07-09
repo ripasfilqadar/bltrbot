@@ -93,9 +93,9 @@ func createIqobList(users []model.User, t_min *time.Time, t_max *time.Time, opt 
 	for _, user := range users {
 		iqobs := []model.Iqob{}
 		if t_min != nil && t_max != nil {
-			db.MysqlDB().Where("created_at BETWEEN ? AND ? AND user_id = ?"+opt, t_min, t_max, user.ID).Order("iqob_date").Find(&iqobs)
+			db.MysqlDB().Where("created_at BETWEEN ? AND ? AND user_id = ? AND "+opt, t_min, t_max, user.ID).Order("iqob_date").Find(&iqobs)
 		} else {
-			db.MysqlDB().Where("user_id = ?"+opt, user.ID).Order("iqob_date").Find(&iqobs)
+			db.MysqlDB().Where("user_id = ? AND "+opt, user.ID).Order("iqob_date").Find(&iqobs)
 		}
 		templateUser := Emoji["iqob"] + " " + user.FullName
 		fmt.Println("len(iqobs)")
