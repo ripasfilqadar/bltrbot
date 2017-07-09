@@ -70,6 +70,7 @@ func updateRemaining() {
 		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
 
 		Bot.SendToGroup(group.GroupId, template)
-		db.MysqlDB().Model(&users).UpdateColumn("report_today", false)
 	}
+	db.MysqlDB().Model(model.User{}).Update("report_today", false)
+
 }

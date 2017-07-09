@@ -39,6 +39,7 @@ func InitDB() {
 	db.MysqlDB().Model(&model.Iqob{}).AddIndex("user_id", "state")
 	db.MysqlDB().Model(&model.Group{}).AddIndex("group_id")
 	db.MysqlDB().Model(&model.Message{}).AddIndex("user_name")
+	db.MysqlDB().Model(&model.User{}).DropColumn("remaining_today")
 }
 
 func initEnv() {
