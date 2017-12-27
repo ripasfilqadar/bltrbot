@@ -5,5 +5,6 @@ mongo/
 .env
 bltrbot/bltrbot
 bltrbot/bltr_bot
+bltrbot/vendor
 notif.*
 backup/
