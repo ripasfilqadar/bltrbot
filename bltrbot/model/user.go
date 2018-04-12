@@ -8,14 +8,14 @@ import (
 
 type User struct {
 	gorm.Model
-	UserName       string `json:"username" bson:"username"`
-	FullName       string `json:"full_name" bson:"full_name"`
-	Target         int    `json:"target" bson:"target"`
-	State          string
-	ChatId         int64
-	GroupId        int64
-	Scope          string
-	ReportToday		 bool
+	UserName    string `json:"username" bson:"username"`
+	FullName    string `json:"full_name" bson:"full_name"`
+	Target      int    `json:"target" bson:"target"`
+	State       string
+	ChatId      int64
+	GroupId     int64
+	Scope       string
+	ReportToday bool
 }
 
 func (u *User) SetTarget(target int) {
@@ -32,4 +32,8 @@ func (u *User) IsSuperAdmin() bool {
 
 func (u *User) IsNormallyUser() bool {
 	return u.Scope == "user"
+}
+
+func (u *User) IsActive() bool {
+	return u.State == "active"
 }

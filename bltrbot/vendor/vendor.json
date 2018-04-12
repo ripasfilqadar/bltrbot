@@ -3,24 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
-			"path": "appengine/cloudsql",
-			"revision": ""
-		},
-		{
-			"path": "context",
-			"revision": ""
-		},
-		{
 			"checksumSHA1": "Z6rD6bmF8InGLXM7EHr8TMxMXNY=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "9181e3a86a19bacd63e68d43ae8b7b36320d8092",
 			"revisionTime": "2017-12-04T00:43:26Z"
-		},
-		{
-			"checksumSHA1": "l/bQAsByacw5YZSY/2KQGUfUT08=",
-			"path": "github.com/go-telegram-bot-api/telegram-bot-api",
-			"revision": "2022d04b94f50056a09962b1ac81cdd821d20a55",
-			"revisionTime": "2017-11-09T18:51:50Z"
 		},
 		{
 			"checksumSHA1": "A7SMz3IkSYwVdJdDZQYzM8wUnTg=",
@@ -81,6 +67,12 @@
 			"path": "gopkg.in/mgo.v2/internal/scram",
 			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
 			"revisionTime": "2016-08-18T02:01:20Z"
+		},
+		{
+			"checksumSHA1": "JaRjqSc0lOpA0V7avHWBex1IY+w=",
+			"path": "gopkg.in/telegram-bot-api.v4",
+			"revision": "2022d04b94f50056a09962b1ac81cdd821d20a55",
+			"revisionTime": "2017-11-09T18:51:50Z"
 		},
 		{
 			"checksumSHA1": "fRgp9UZPllOlkPssv7frzQx4z9A=",

@@ -21,7 +21,7 @@ import (
 
 	"encoding/json"
 
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"gopkg.in/telegram-bot-api.v4"
 )
 
 type Telegram struct {
@@ -93,10 +93,6 @@ func StartTelegram() {
 			updateMsg = update.Message
 		}
 
-		fmt.Println("123")
-
-		fmt.Println(updateMsg)
-		fmt.Println("123")
 		CurrentRoute = Routes.Command[Msg.Command()]
 
 		currentUser(updateMsg)
@@ -184,17 +180,13 @@ func createMsg(message *tgbotapi.Message) model.Message {
 
 func currentUser(msg *tgbotapi.Message) {
 	if CurrentUser == (model.User{}) {
-		fmt.Println("current user")
-		fmt.Println(msg.Chat.ID)
-		fmt.Println(msg.Chat.UserName)
-		fmt.Println(msg.Chat.Type)
-		if msg.Chat.Type == "private" {
+		if Msg.IsPrivate() {
 			db.MysqlDB().Where("user_name = ?", msg.From.UserName).First(&CurrentUser)
 		} else {
 			db.MysqlDB().Where("user_name = ? AND group_id = ?", msg.From.UserName, msg.Chat.ID).First(&CurrentUser)
 		}
 		if CurrentUser == (model.User{}) {
-			if CurrentRoute.Scope == "user" || CurrentRoute.Scope == "group" {
+			if CurrentRoute.IsUser() || CurrentRoute.IsGroup() {
 				CurrentUser = model.User{UserName: msg.From.UserName, FullName: msg.From.FirstName + " " + msg.From.LastName, State: "active", ChatId: int64(msg.From.ID), GroupId: Msg.GroupId, Scope: "user"}
 				db.MysqlDB().Create(&CurrentUser)
 			}
@@ -202,13 +194,13 @@ func currentUser(msg *tgbotapi.Message) {
 	}
 }
 
-func onlyForGroup(msg *tgbotapi.Message) bool {
-	if msg.Chat.Type == "private" && CurrentUser.IsNormallyUser() && CurrentRoute.Scope == "admin" {
-		Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
-		return false
-	}
-	if CurrentUser.IsNormallyUser() && CurrentRoute.Scope == "admin" {
-		Bot.ReplyToUser("Perintah yang anda masukkan salah")
+func onlyForGroup() bool {
+	if CurrentUser.IsNormallyUser() && CurrentRoute.IsAdmin() {
+		if Msg.IsPrivate() {
+			Bot.ReplyToUser("Sekarang Bot hanya tersedia untuk group")
+		} else {
+			Bot.ReplyToUser("Perintah yang anda masukkan salah")
+		}
 		return false
 	}
 	return true
@@ -217,7 +209,7 @@ func onlyForGroup(msg *tgbotapi.Message) bool {
 func findFunc() {
 	defer func() {
 		if r := recover(); r != nil {
-			ErrorHandling(r.(string)+"\n")
+			ErrorHandling(r.(string) + "\n")
 		}
 	}()
 
@@ -230,25 +222,28 @@ func findCommand(msg string) string {
 }
 
 func isError(msg *tgbotapi.Message) bool {
-	if !onlyForGroup(msg) {
+	if !onlyForGroup() {
 		return true
 	}
 	if msg.ReplyToMessage != nil {
 		return true
 	}
-	if msg.NewChatMember != nil {
-		if msg.NewChatMember.UserName == os.Getenv("TELEGRAM_USERNAME") {
-			group := model.Group{}
-			db.MysqlDB().Where("group_id = ?", Msg.GroupId).First(&group)
-			if group == (model.Group{}) {
-				group = model.Group{GroupId: Msg.GroupId, State: "active", Name: msg.Chat.Title}
-				db.MysqlDB().Create(&group)
+	if msg.NewChatMembers != nil {
+		newMembers := msg.NewChatMembers
+		for _, newMember := range *newMembers {
+			if newMember.UserName == os.Getenv("TELEGRAM_USERNAME") {
+				group := model.Group{}
+				db.MysqlDB().Where("group_id = ?", Msg.GroupId).First(&group)
+				if group == (model.Group{}) {
+					group = model.Group{GroupId: Msg.GroupId, State: "active", Name: msg.Chat.Title}
+					db.MysqlDB().Create(&group)
+				} else {
+					db.MysqlDB().Model(&group).Update("state", "active")
+				}
+				Bot.SendToGroup(group.GroupId, "Terimakasih sudah menambahkan BLTR Bot, pilih /help untuk melihat list perintah yang tersedia")
 			} else {
-				db.MysqlDB().Model(&group).Update("state", "active")
+				Bot.ReplyToUser("Welcome @" + newMember.UserName + ", silahkan pilih /target untuk mengatur tilawah anda, atau /help untuk melihat list perintah yang tersedia")
 			}
-			Bot.SendToGroup(group.GroupId, "Terimakasih sudah menambahkan BLTR Bot, pilih /help untuk melihat list perintah yang tersedia")
-		} else {
-			Bot.ReplyToUser("Welcome @" + msg.NewChatMember.UserName + ", silahkan pilih /target untuk mengatur tilawah anda, atau /help untuk melihat list perintah yang tersedia")
 		}
 		return true
 	}
@@ -301,8 +296,6 @@ func CreateInlineKeyboard(count int, data []string, text []string, lastData stri
 	if lastData == "" {
 		lastData = "finished"
 	}
-	fmt.Println("lastData")
-	fmt.Println(lastData)
 	button := tgbotapi.NewInlineKeyboardButtonData("Done", lastData)
 	buttonrows[count] = tgbotapi.NewInlineKeyboardRow(button)
 	fmt.Println(buttonrows)
@@ -326,9 +319,9 @@ func sendLog(errorMsg string) {
 	hc := http.Client{}
 
 	form := url.Values{}
-	form.Add("chat_id", os.Getenv("BIG_BOSS_CHAT_ID") + "sendMessage")
+	form.Add("chat_id", os.Getenv("BIG_BOSS_CHAT_ID")+"sendMessage")
 	form.Add("text", errorMsg)
-	req, _ := http.NewRequest("POST", os.Getenv("BIG_BOSS_CHAT_URL") + "sendMessage", strings.NewReader(form.Encode()))
+	req, _ := http.NewRequest("POST", os.Getenv("BIG_BOSS_CHAT_URL")+"sendMessage", strings.NewReader(form.Encode()))
 	// req.PostForm = form
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	hc.Do(req)

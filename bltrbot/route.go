@@ -21,6 +21,18 @@ type Command struct {
 	Scope       string `yaml:scope`
 }
 
+func (c *Command) IsUser() bool {
+	return c.Scope == "user"
+}
+
+func (c *Command) IsGroup() bool {
+	return c.Scope == "group"
+}
+
+func (c *Command) IsAdmin() bool {
+	return c.Scope == "admin"
+}
+
 type CallbackMessage struct {
 	Controller string `json:"controller"`
 	Data       string `json:"data"`
