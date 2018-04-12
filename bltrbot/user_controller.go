@@ -23,12 +23,12 @@ func (c *Controller) SetTarget() {
 func (c *Controller) TodayReport() {
 	fmt.Println("today report")
 	fmt.Println(Args[1])
-	if Args[1] == "done"{
+	if Args[1] == "done" {
 		users := []model.User{}
 		db.MysqlDB().Where("group_id = ?", Msg.GroupId).Find(&users)
 		template := ListMemberToday(users)
 		Bot.EditMessage(template, Msg.ChatID, Msg.MessageId)
-	}else{
+	} else {
 		user_id, err := strconv.Atoi(Args[1])
 		fmt.Println(user_id)
 		if err == nil && user_id > 0 {
@@ -57,13 +57,11 @@ func (c *Controller) PaidIqob() {
 	total, err := strconv.Atoi(Args[1])
 	if err == nil && total > 0 {
 		iqobs := []model.Iqob{}
-		db.MysqlDB().Where("state = ? and user_id = ?", "not_paid", CurrentUser.ID).Limit(total).Find(&iqobs)
+		db.MysqlDB().Where("user_id = ?", CurrentUser.ID).Limit(total).Find(&iqobs)
 		count := 0
 		fmt.Println(iqobs)
 		for _, iqob := range iqobs {
-			iqob.PaidAt = time.Now()
-			iqob.State = "paid"
-			db.MysqlDB().Save(&iqob)
+			db.MysqlDB().Delete(&iqob)
 			count++
 		}
 		if len(iqobs) == 0 {

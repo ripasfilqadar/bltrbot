@@ -30,6 +30,7 @@ func main() {
 	//	reminderUser()
 	//	updateRemaining()
 	StartTelegram()
+	removePaidIqob()
 }
 
 func InitDB() {
@@ -63,4 +64,9 @@ func initEnv() {
 			}
 		}
 	}
+}
+
+func removePaidIqob() {
+	iqobs := []model.Iqob{}
+	db.MysqlDB().Where("state = ?", "paid").Delete(model.Iqob{})
 }
