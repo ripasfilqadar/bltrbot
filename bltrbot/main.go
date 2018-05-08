@@ -27,8 +27,6 @@ func main() {
 	InitDB()
 	InitTelegram()
 	go RunSchedule()
-	//	reminderUser()
-	//	updateRemaining()
 	StartTelegram()
 	removePaidIqob()
 }
@@ -40,7 +38,6 @@ func InitDB() {
 	db.MysqlDB().Model(&model.Iqob{}).AddIndex("user_id", "state")
 	db.MysqlDB().Model(&model.Group{}).AddIndex("group_id")
 	db.MysqlDB().Model(&model.Message{}).AddIndex("user_name")
-	db.MysqlDB().Model(&model.User{}).DropColumn("remaining_today")
 }
 
 func initEnv() {
@@ -54,14 +51,7 @@ func initEnv() {
 	for scanner.Scan() {
 		envTemp := strings.Split(scanner.Text(), "=")
 		if len(envTemp) == 2 {
-			if envTemp[0] == "ADMIN_USERNAME" {
-				admins := strings.Fields(envTemp[1])
-				for _, admin := range admins {
-					os.Setenv(envTemp[0], admin)
-				}
-			} else {
-				os.Setenv(envTemp[0], envTemp[1])
-			}
+			os.Setenv(envTemp[0], envTemp[1])
 		}
 	}
 }

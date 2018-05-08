@@ -23,7 +23,6 @@ func RunSchedule() {
 //Task
 func reminderUser() {
 	template := "Yang belum laporan \n"
-	fmt.Println("Debug")
 	groups := []model.Group{}
 	db.MysqlDB().Find(&groups)
 	for _, group := range groups {
@@ -56,8 +55,7 @@ func updateRemaining() {
 		template += ListMemberToday(users)
 		for idx, user := range users {
 			fmt.Println(user)
-			if !user.ReportToday{
-				fmt.Println("active bro")
+			if !user.ReportToday {
 				if user.State != "active" {
 					continue
 				}
@@ -66,7 +64,7 @@ func updateRemaining() {
 				db.MysqlDB().Create(&iqob)
 				username_users += strconv.Itoa(idx+1) + " ). " + StateEmoji(user) + " " + user.FullName + "(" + strconv.Itoa(user.Target) + " )\n"
 			}
-					}
+		}
 		template += "\nList Iqob " + DateFormat(iqob_date.Date()) + "\n" + username_users
 
 		Bot.SendToGroup(group.GroupId, template)

@@ -18,3 +18,7 @@ type Message struct {
 func (msg *Message) Command() string {
   return strings.Split(strings.Split(msg.Message, " ")[0], "@")[0]
 }
+
+func (msg *Message) IsPrivate() bool {
+  return msg.Type == "private"
+}
